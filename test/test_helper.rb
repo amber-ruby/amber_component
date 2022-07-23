@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
-require "amber_components"
-
-require "minitest/autorun"
+require 'amber_components'
+require 'minitest/autorun'
