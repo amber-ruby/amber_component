@@ -1,4 +1,8 @@
-class ExampleComponent < AmberComponents::BaseComponent
+# frozen_string_literal: true
+
+require 'ostruct'
+
+class ::ExampleComponent < ::AmberComponents::BaseComponent
   def before_render
     @user = fetch_user_from_db
   end
@@ -7,7 +11,7 @@ class ExampleComponent < AmberComponents::BaseComponent
 
   # Example method
   def fetch_user_from_db
-    {
+    ::OpenStruct.new({
       name: "#{@name}",
       email: "#{@name.gsub(' ', '').underscore}@example.com",
       age: 42,
@@ -16,6 +20,6 @@ class ExampleComponent < AmberComponents::BaseComponent
         city: 'Anytown',
         state: 'California'
       }
-    }
+    })
   end
 end

@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class TestAmberComponents < Minitest::Test
+class ::TestAmberComponents < ::Minitest::Test
   def test_that_it_has_a_version_number
     refute_nil ::AmberComponents::VERSION
   end

@@ -7,9 +7,6 @@ gemspec
 
 gem "rake", "~> 13.0"
 
-# This should be verified - does we need full
-gem "rails", ">= 6"
-
 # change it to test scope
 gem "byebug"
 gem "minitest", "~> 5.0"

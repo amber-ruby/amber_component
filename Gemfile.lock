@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     amber_components (0.0.1)
+      rails (>= 6)
 
 GEM
   remote: https://rubygems.org/
@@ -212,7 +213,6 @@ DEPENDENCIES
   amber_components!
   byebug
   minitest (~> 5.0)
-  rails (>= 6)
   rake (~> 13.0)
   rubocop (~> 1.21)
   solargraph (~> 0.45.0)
