@@ -5,8 +5,8 @@ require_relative "lib/amber_components/version"
 ::Gem::Specification.new do |spec|
   spec.name = "amber_components"
   spec.version = ::AmberComponents::VERSION
-  spec.authors = ["Mateusz Drewniak", 'Piotr Garbicz']
-  spec.email = ["matmg24@gmail.com"]
+  spec.authors = ['Ruby-Amber', 'Mateusz Drewniak', 'Garbus Beach']
+  spec.email = ['matmg24@gmail.com', 'piotr.garbus.garbicz@gmail.com']
 
   spec.summary = "A simple component library which seamlessly hooks into your Rails project."
   spec.description = <<~DESC

@@ -6,3 +6,6 @@
 /pkg/
 /spec/reports/
 /tmp/
+
+# IDE config folders
+/.vscode
