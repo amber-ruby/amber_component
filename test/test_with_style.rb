@@ -2,11 +2,13 @@
 
 require 'test_helper'
 require 'nokogiri'
+require 'sassc'
+
 require_relative './fixtures/styled_component'
 require_relative './fixtures/method_styled_component'
 require_relative './fixtures/scss_method_styled_component'
 
-class ::TestWithStyle < ::Minitest::Test
+class ::TestWithStyle < ::TestCase
   def test_that_is_able_to_build_style_from_file
     view = StyledComponent.()
     doc = Nokogiri::HTML(view)

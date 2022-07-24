@@ -4,7 +4,6 @@ require 'test_helper'
 
 require 'nokogiri'
 require 'haml'
-require 'byebug'
 
 require_relative './fixtures/example_component'
 require_relative './fixtures/ruby_version_component'

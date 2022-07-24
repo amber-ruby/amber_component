@@ -40,6 +40,7 @@ module ::AmberComponent
 
     # @return [Regexp]
     VIEW_FILE_REGEXP  = /^view\./.freeze
+    # @return [Regexp]
     STYLE_FILE_REGEXP = /^style\./.freeze
 
     class << self
@@ -66,7 +67,7 @@ module ::AmberComponent
     # @return [String]
     def render(&block)
       run_callbacks :render do
-        element = render_view
+        element = render_view(&block)
         styles = inject_styles
         element += styles unless styles.nil?
         element
@@ -104,7 +105,9 @@ module ::AmberComponent
 
     # Can be overridden to provide styling in class file.
     # Should return string of CSS. When other type is provided,
-    # should return hash {style: String, type: String ('sass | scss | less')}.
+    # should return hash:
+    #
+    #   {style: String, type: String ('sass | scss | less')}.
     #
     # @return [String, Hash{style => String, type => String}, nil]
     def style; end
@@ -119,9 +122,12 @@ module ::AmberComponent
       end
     end
 
+    # Returns the name of the file inside the asset directory
+    # of this component that matches the provided `Regexp`
+    #
     # @param type_regexp [Regexp]
     # @return [String, nil]
-    def find_asset_file_path(type_regexp)
+    def asset_file_name(type_regexp)
       asset_dir = component_asset_dir_path
       ::Dir.entries(asset_dir).find do |file|
         next unless ::File.file?(::File.join(asset_dir, file))
@@ -131,16 +137,21 @@ module ::AmberComponent
     end
 
     # @return [String]
-    def render_view
-      view_path = asset_path(find_asset_file_path(VIEW_FILE_REGEXP))
+    def render_view(&block)
+      view_path = asset_path(asset_file_name(VIEW_FILE_REGEXP))
       raise ViewFileNotFound, "View file for `#{self.class}` could not be found!" unless view_path
 
-      ::Tilt.new(view_path).render(self)
+      ::Tilt.new(view_path).render(self, &block)
     end
 
     # Helper method to render style from css string or with other provided type.
-    # Usage: render_custom_style('.my-class { color: red; }')
-    # or: render_custom_style({style: '.my-class { color: red; }', type: 'sass'})
+    # Usage:
+    #
+    #   render_custom_style('.my-class { color: red; }')
+    #
+    # or:
+    #
+    #   render_custom_style({style: '.my-class { color: red; }', type: 'sass'})
     #
     # @param style [String, Hash{style => String, type => String}]
     # @return [String, nil]
@@ -174,26 +185,28 @@ module ::AmberComponent
     #
     # @return [String]
     def render_style_from_file
-      style_path = asset_path(find_asset_file_path(STYLE_FILE_REGEXP))
+      style_path = asset_path(asset_file_name(STYLE_FILE_REGEXP))
       return '' unless style_path
-      return File.read(style_path) if style_path.split('.').last == 'css'
+      return ::File.read(style_path) if style_path.split('.').last == 'css'
 
       ::Tilt.new(style_path).render(self)
     end
 
     # Method returning style from method in class file.
     # Usage:
+    #
     #   def style
     #     '.my-class { color: red; }'
     #   end
     #
     # or:
-    #  def style
-    #   {
-    #     style: '.my-class { color: red; }',
-    #     type: 'sass'
-    #   }
-    # end
+    #
+    #    def style
+    #     {
+    #       style: '.my-class { color: red; }',
+    #       type: 'sass'
+    #     }
+    #   end
     #
     # @return [String]
     def render_style_from_method
@@ -202,8 +215,11 @@ module ::AmberComponent
 
     # Method returning style from params in view.
     # Usage:
+    #
     #   <%= ExampleComponent data: data, style: '.my-class { color: red; }' %>
+    #
     # or:
+    #
     #   <%= ExampleComponent data: data, style: {style: '.my-class { color: red; }', type: 'sass'} %>
     #
     # @return [String]

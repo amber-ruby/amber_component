@@ -2,5 +2,5 @@
 
 require 'ostruct'
 
-class ::RubyVersionComponent < ::AmberComponents::Base
+class ::RubyVersionComponent < ::AmberComponent::Base
 end

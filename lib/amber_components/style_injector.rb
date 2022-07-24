@@ -17,10 +17,12 @@ class ::AmberComponent::StyleInjector
     end
   end
 
+  # @param style [String]
   def initialize(style)
     @style = style
   end
 
+  # @return [void]
   def run
     return dom_tag unless dom_available?
 
@@ -36,11 +38,12 @@ class ::AmberComponent::StyleInjector
     # check for header in DOM rendrer
   end
 
-  # @return [nil]
+  # @return [void]
   def insert_style_in_head
     false
   end
 
+  # @return [String]
   def dom_tag
     "<style type='text/css'>#{@style}</style>"
   end

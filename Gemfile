@@ -10,6 +10,7 @@ gem "rake", "~> 13.0"
 # change it to test scope
 gem "byebug"
 gem 'haml'
+gem 'sassc'
 gem "minitest", "~> 5.0"
 gem 'shoulda-context', '~> 2.0'
 

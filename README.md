@@ -31,3 +31,15 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/[USERN
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+## Problems
+
+> An error occurred while installing ffi (1.15.5), and Bundler cannot continue.
+>
+> In Gemfile:
+>  sassc was resolved to 2.4.0, which depends on
+>    ffi
+
+```sh
+$ gem install ffi -- --with-cflags="-fdeclspec"
+```
