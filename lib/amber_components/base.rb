@@ -72,7 +72,7 @@ module ::AmberComponent
       # @return [String]
       def view_path
         files = asset_file_name(VIEW_FILE_REGEXP)
-        raise MultipleViews, "More than one view file for #{self.class} found!" if files.length > 1
+        raise MultipleViews, "More than one view file for `#{name}` found!" if files.length > 1
 
         asset_path files.first
       end
@@ -80,7 +80,7 @@ module ::AmberComponent
       # @return [String]
       def style_path
         files = asset_file_name(STYLE_FILE_REGEXP)
-        raise MultipleStyles, "More than one style file for #{self.class} found!" if files.length > 1
+        raise MultipleStyles, "More than one style file for `#{name}` found!" if files.length > 1
 
         asset_path files.first
       end
@@ -96,11 +96,11 @@ module ::AmberComponent
       # Usage:
       #
       #   view do
-      #     <<~HTML
+      #     <<~ERB
       #       <h1>
       #         Hello <%= @name %>
       #       </h1>
-      #     HTML
+      #     ERB
       #   end
       #
       # or:
@@ -220,7 +220,6 @@ module ::AmberComponent
     # @return [String, nil]
     def render_custom_view(view, &block)
       return '' unless view
-      return view if view.is_a? String
 
       type = view[:type].to_s.downcase
       content = \
@@ -233,23 +232,15 @@ module ::AmberComponent
 
 
       if content.empty?
-        raise EmptyView, <<~ERR.chomp
-          Custom view for #{self.class} from view method cannot be empty!
-          Check return value of view[:content]
-        ERR
-      end
-
-      if type.empty?
-        raise ViewTypeNotFound, <<~ERR.chomp
-          Custom view type for #{self.class} from view method cannot be empty!
-          Check return value of view[:type]
+        raise EmptyView, <<~ERR.squish
+          Custom view for `#{self.class}` from view method cannot be empty!
         ERR
       end
 
       unless %w[erb haml html md markdown].include? type
-        raise UnknownViewType, <<~ERR.chomp
-          Unknown view type for #{self.class} from view method!
-          Check return value of view[:type]
+        raise UnknownViewType, <<~ERR.squish
+          Unknown view type for `#{self.class}` from view method!
+          Check return value of param type in `view :[type] do`
         ERR
       end
 
@@ -301,7 +292,17 @@ module ::AmberComponent
     #
     # @return [String]
     def render_view_from_inline(&block)
-      render_custom_view(@view, &block)
+      data = \
+        if @view.is_a? String
+          {
+            type: :erb,
+            content: @view
+          }
+        else
+          @view
+        end
+
+      render_custom_view(data, &block)
     end
 
     # @return [String]
@@ -346,21 +347,14 @@ module ::AmberComponent
         end
 
       if content.empty?
-        raise EmptyStyle, <<~ERR.chomp
-          Custom style for #{self.class} from style method cannot be empty!
-          Check return value of style[:style]
-        ERR
-      end
-      if type.empty?
-        raise StyleTypeNotFound, <<~ERR.chomp
-          Custom style type for #{self.class} from style method cannot be empty!
-          Check return value of style[:type]
+        raise EmptyStyle, <<~ERR.squish
+          Custom style for `#{self.class}` from style method cannot be empty!
         ERR
       end
       unless %w[sass scss less].include? type
-        raise UnknownStyleType, <<~ERR.chomp
-          Unknown style type for #{self.class} from style method!
-          Check return value of style[:type]
+        raise UnknownStyleType, <<~ERR.squish
+          Unknown style type for `#{self.class}` from style method!
+          Check return value of param type in `style :[type] do`
         ERR
       end
 
