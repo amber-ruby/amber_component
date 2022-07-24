@@ -4,28 +4,35 @@ require 'erb'
 require 'byebug'
 
 class ::AmberComponents::BaseComponent
-  class << self
-    # @return [String]
-    def run(*args)
-      comp = new(*args)
+  extend ::ActiveModel::Callbacks
 
-      comp.before_render
+  class << self
+    # @param kwargs [Hash{Symbol => Object}]
+    # @return [String]
+    def run(**kwargs)
+      comp = new(**kwargs)
+
       comp.render
     end
 
     alias call run
   end
 
-  def initialize(*args)
-    before_create
-    bind_variables(*args)
-    after_create
+  define_model_callbacks :initialize, :render
+
+  # @param kwargs [Hash{Symbol => Object}]
+  def initialize(**kwargs)
+    run_callbacks :initialize do
+      bind_variables(**kwargs)
+    end
   end
 
   # @return [String]
   def render
-    view_path = asset_path('view.erb')
-    ::ERB.new(::File.read(view_path)).result(local_binding)
+    run_callbacks :render do
+      view_path = asset_path('view.erb')
+      ::ERB.new(::File.read(view_path)).result(local_binding)
+    end
   end
 
   # Returns a binding in the scope of this instance.
@@ -49,12 +56,6 @@ class ::AmberComponents::BaseComponent
 
     component_file_path.delete_suffix('.rb')
   end
-
-  protected
-
-  def after_create(*args); end
-  def before_create(*args); end
-  def before_render(*args); end
 
   private
 

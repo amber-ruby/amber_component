@@ -3,7 +3,7 @@
 require 'ostruct'
 
 class ::ExampleComponent < ::AmberComponents::BaseComponent
-  def before_render
+  before_render do
     @user = fetch_user_from_db
   end
 
