@@ -73,12 +73,18 @@ module ::AmberComponent
 
       # @return [String]
       def view_path
-        asset_path asset_file_name(VIEW_FILE_REGEXP)
+        files = asset_file_name(VIEW_FILE_REGEXP)
+        raise MultipleViews, "More than one view file for #{self.class} found!" if files.length > 1
+
+        asset_path files.first
       end
 
       # @return [String]
       def style_path
-        asset_path asset_file_name(STYLE_FILE_REGEXP)
+        files = asset_file_name(STYLE_FILE_REGEXP)
+        raise MultipleStyles, "More than one style file for #{self.class} found!" if files.length > 1
+
+        asset_path files.first
       end
 
       # Memoize these methods in production
@@ -176,9 +182,11 @@ module ::AmberComponent
       # of this component that matches the provided `Regexp`
       #
       # @param type_regexp [Regexp]
-      # @return [String, nil]
+      # @return [Array<String>]
       def asset_file_name(type_regexp)
-        ::Dir.entries(asset_dir_path).find do |file|
+        return [] unless File.directory?(asset_dir_path)
+
+        ::Dir.entries(asset_dir_path).select do |file|
           next unless ::File.file?(::File.join(asset_dir_path, file))
 
           file.match? type_regexp
@@ -212,20 +220,6 @@ module ::AmberComponent
     def bind_variables(kwargs)
       kwargs.each do |key, value|
         instance_variable_set("@#{key}", value)
-      end
-    end
-
-    # Returns the name of the file inside the asset directory
-    # of this component that matches the provided `Regexp`
-    #
-    # @param type_regexp [Regexp]
-    # @return [String, nil]
-    def asset_file_name(type_regexp)
-      asset_dir = self.class.asset_dir_path
-      ::Dir.entries(asset_dir).find do |file|
-        next unless ::File.file?(::File.join(asset_dir, file))
-
-        file.match? type_regexp
       end
     end
 
@@ -281,7 +275,7 @@ module ::AmberComponent
     # @return [String]
     def render_view_from_file(&block)
       view_path = self.class.view_path
-      return '' unless ::File.exist?(view_path)
+      return '' if view_path.nil? || !::File.file?(view_path)
 
       ::Tilt.new(view_path).render(self, &block)
     end
@@ -336,7 +330,9 @@ module ::AmberComponent
       view_content = view_from_method unless view_from_method.empty?
       view_content = view_from_inline unless view_from_inline.empty?
 
-      raise ViewFileNotFound, "View for `#{self.class}` could not be found!" if view_content.empty?
+      if view_content.nil? || view_content.empty?
+        raise ViewFileNotFound, "View for `#{self.class}` could not be found!"
+      end
 
       view_content
     end

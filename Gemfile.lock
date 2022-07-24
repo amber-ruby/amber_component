@@ -83,6 +83,7 @@ GEM
     crass (1.0.6)
     diff-lcs (1.5.0)
     digest (3.1.0)
+    docile (1.4.0)
     e2mmap (0.1.0)
     erubi (1.10.0)
     ffi (1.15.5)
@@ -187,6 +188,12 @@ GEM
     sassc (2.4.0)
       ffi (~> 1.9)
     shoulda-context (2.0.0)
+    simplecov (0.21.2)
+      docile (~> 1.1)
+      simplecov-html (~> 0.11)
+      simplecov_json_formatter (~> 0.1)
+    simplecov-html (0.12.3)
+    simplecov_json_formatter (0.1.4)
     solargraph (0.45.0)
       backport (~> 1.2)
       benchmark
@@ -231,6 +238,7 @@ DEPENDENCIES
   rubocop (~> 1.21)
   sassc
   shoulda-context (~> 2.0)
+  simplecov
   solargraph (~> 0.45.0)
   yard
 
