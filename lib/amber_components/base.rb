@@ -35,7 +35,7 @@ require_relative './style_injector'
 #
 # @abstract Create a subclass to define a new component.
 module ::AmberComponent
-  class Base
+  class Base # :nodoc:
     extend ::ActiveModel::Callbacks
 
     # @return [Regexp]
@@ -77,8 +77,8 @@ module ::AmberComponent
     # @return [String]
     def render(&block)
       run_callbacks :render do
-        element = render_view(&block)
-        styles = inject_styles
+        element  = inject_views(block)
+        styles   = inject_styles
         element += styles unless styles.nil?
         element
       end
@@ -100,8 +100,15 @@ module ::AmberComponent
     #
     #   {style: String, type: String ('sass | scss | less')}.
     #
-    # @return [String, Hash{style => String, type => String}, nil]
+    # @return [String, Hash{content => String, type => String}, nil]
     def style; end
+
+    # Can be overridden to provide small views in class file.
+    # Should return string of ERB. When other type is provided,
+    # should return hash {content: String, type: String ('erb | haml | html | md (markdown)')}.
+    #
+    # @return [String, Hash{content => String, type => String}, nil]
+    def view; end
 
     private
 
@@ -127,12 +134,104 @@ module ::AmberComponent
       end
     end
 
+    # Helper method to render view from string or with other provided type.
+    # Usage:
+    #
+    #   render_custom_view('<h1>Hello World</h1>')
+    #
+    # or:
+    #
+    #   render_custom_view({content: '**Hello World**', type: 'md'})
+    #
+    # @param style [String, Hash{content => String, type => String}]
+    # @return [String, nil]
+    def render_custom_view(view)
+      return '' unless view
+      return view if view.is_a? String
+
+      type = view[:type].to_s.downcase
+      content = view[:content].to_s
+
+      if content.empty?
+        raise EmptyView, <<~ERR.chomp
+          Custom view for #{self.class} from view method cannot be empty!
+          Check return value of view[:content]
+        ERR
+      end
+
+      if type.empty?
+        raise ViewTypeNotFound, <<~ERR.chomp
+          Custom view type for #{self.class} from view method cannot be empty!
+          Check return value of view[:type]
+        ERR
+      end
+
+      unless %w[erb haml html md markdown].include? type
+        raise UnknownViewType, <<~ERR.chomp
+          Unknown view type for #{self.class} from view method!
+          Check return value of view[:type]
+        ERR
+      end
+
+      ::Tilt[type].new { content }.render(self)
+    end
+
     # @return [String]
-    def render_view(&block)
-      view_path = asset_path(asset_file_name(VIEW_FILE_REGEXP))
-      raise ViewFileNotFound, "View file for `#{self.class}` could not be found!" unless view_path
+    def render_view_from_file
+      view_path = asset_path(find_asset_file_path(VIEW_FILE_REGEXP))
+      return '' unless File.exist?(view_path)
 
       ::Tilt.new(view_path).render(self, &block)
+    end
+
+    # Method returning view from method in class file.
+    # Usage:
+    #
+    #   def view
+    #     '<h1>Hello World</h1>'
+    #   end
+    #
+    # or:
+    #
+    #  def view
+    #   {
+    #     content: "<h1>Hello #{@name}</h1>",
+    #     type: 'erb'
+    #   }
+    # end
+    #
+    # @return [String]
+    def render_view_from_method
+      render_custom_view(view)
+    end
+
+    # Method returning view from params in view.
+    # Usage:
+    #
+    #   <%= ExampleComponent data: data, view: "<h1>Hello #{@name}</h1>" %>
+    #
+    # or:
+    #
+    #   <%= ExampleComponent data: data, view: {content: "<h1>Hello #{@name}</h1>", type: 'erb'} %>
+    #
+    # @return [String]
+    def render_view_from_inline
+      render_custom_view(@view)
+    end
+
+    # @return [String]
+    def inject_views(&_block)
+      view_from_file   = render_view_from_file
+      view_from_method = render_view_from_method
+      view_from_inline = render_view_from_inline
+
+      view_content = view_from_file unless view_from_file.empty?
+      view_content = view_from_method unless view_from_method.empty?
+      view_content = view_from_inline unless view_from_inline.empty?
+
+      raise ViewFileNotFound, "View for `#{self.class}` could not be found!" if view_content.empty?
+
+      view_content
     end
 
     # Helper method to render style from css string or with other provided type.
@@ -144,7 +243,7 @@ module ::AmberComponent
     #
     #   render_custom_style({style: '.my-class { color: red; }', type: 'sass'})
     #
-    # @param style [String, Hash{style => String, type => String}]
+    # @param style [String, Hash{content => String, type => String}]
     # @return [String, nil]
     def render_custom_style(style)
       return '' unless style
@@ -166,13 +265,13 @@ module ::AmberComponent
         ERR
       end
       unless %w[sass scss less].include? type
-        raise UnknownStyleType, <<~ERR
+        raise UnknownStyleType, <<~ERR.chomp
           Unknown style type for #{self.class} from style method!
           Check return value of style[:type]
         ERR
       end
 
-      ::Tilt[type].new { content }.render
+      ::Tilt[type].new { content }.render(self)
     end
 
     # Method returning style from file (style.(css|sass|scss|less)) if exists.
