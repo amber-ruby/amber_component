@@ -14,3 +14,4 @@ gem "minitest", "~> 5.0"
 # change it to develop scope
 gem "rubocop", "~> 1.21"
 gem "solargraph", "~> 0.45.0"
+gem "yard"

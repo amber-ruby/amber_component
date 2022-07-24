@@ -2,7 +2,7 @@
 
 require 'ostruct'
 
-class ::ExampleComponent < ::AmberComponents::BaseComponent
+class ::ExampleComponent < ::AmberComponents::Base
   before_render do
     @user = fetch_user_from_db
   end

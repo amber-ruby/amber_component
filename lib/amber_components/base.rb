@@ -1,9 +1,37 @@
 # frozen_string_literal: true
 
 require 'erb'
-require 'byebug'
+require 'active_model/callbacks'
 
-class ::AmberComponents::BaseComponent
+# Abstract class which serves as a base
+# for all Amber Components.
+#
+# There are a few life cycle callbacks that can be defined.
+# The same way as in `ActiveRecord` models and `ActionController` controllers.
+#
+# - before_render
+# - around_render
+# - after_render
+# - before_initialize
+# - around_initialize
+# - after_initialize
+#
+#    class ButtonComponent < ::AmberComponents::Base
+#      # You can provide a Symbol of the method that should be called
+#      before_render :before_render_method
+#      # Or provide a block that will be executed
+#      after_initialize do
+#        # Your code here
+#      end
+#
+#      def before_render_method
+#        # Your code here
+#      end
+#    end
+#
+#
+# @abstract Create a subclass to define a new component.
+class ::AmberComponents::Base
   extend ::ActiveModel::Callbacks
 
   class << self
@@ -23,7 +51,7 @@ class ::AmberComponents::BaseComponent
   # @param kwargs [Hash{Symbol => Object}]
   def initialize(**kwargs)
     run_callbacks :initialize do
-      bind_variables(**kwargs)
+      bind_variables(kwargs)
     end
   end
 
@@ -59,12 +87,11 @@ class ::AmberComponents::BaseComponent
 
   private
 
-  def bind_variables(*args)
-    args.each do |arg|
-      key   = arg.keys.first
-      name  = key.to_s
-      value = arg[key]
-      instance_variable_set("@#{name}", value)
+  # @param kwargs [Hash{Symbol => Object}]
+  # @return [void]
+  def bind_variables(kwargs)
+    kwargs.each do |key, value|
+      instance_variable_set("@#{key}", value)
     end
   end
 end

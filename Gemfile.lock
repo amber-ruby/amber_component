@@ -216,6 +216,7 @@ DEPENDENCIES
   rake (~> 13.0)
   rubocop (~> 1.21)
   solargraph (~> 0.45.0)
+  yard
 
 BUNDLED WITH
    2.3.14
