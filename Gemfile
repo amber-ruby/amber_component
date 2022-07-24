@@ -18,4 +18,4 @@ gem 'yard'
 # Testing dependencies
 gem 'minitest', '~> 5.0'
 gem 'shoulda-context', '~> 2.0'
-gem 'simplecov'
+gem 'simplecov', require: false
