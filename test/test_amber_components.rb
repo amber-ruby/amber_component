@@ -2,8 +2,8 @@
 
 require 'test_helper'
 
-class ::TestAmberComponents < ::TestCase
-  should 'have a version number' do
-    refute_nil ::AmberComponents::VERSION
+class ::TestAmberComponent < ::Minitest::Test
+  def test_that_it_has_a_version_number
+    refute_nil ::AmberComponent::VERSION
   end
 end
