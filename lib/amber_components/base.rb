@@ -3,6 +3,7 @@
 require 'erb'
 require 'tilt'
 require 'active_model/callbacks'
+require 'memery'
 
 require_relative './style_injector'
 
@@ -44,6 +45,8 @@ module ::AmberComponent
     STYLE_FILE_REGEXP = /^style\./.freeze
 
     class << self
+      include ::Memery
+
       # @param kwargs [Hash{Symbol => Object}]
       # @return [String]
       def run(**kwargs, &block)
@@ -54,14 +57,13 @@ module ::AmberComponent
 
       alias call run
 
-      # @return [String]
-      def asset_dir_path
-        @asset_dir_path ||= begin
-          class_const_name = name.split('::').last
-          component_file_path, = module_parent.const_source_location(class_const_name)
 
-          component_file_path.delete_suffix('.rb')
-        end
+      # @return [String]
+      memoize def asset_dir_path
+        class_const_name = name.split('::').last
+        component_file_path, = module_parent.const_source_location(class_const_name)
+
+        component_file_path.delete_suffix('.rb')
       end
 
       # @return [String]
@@ -72,6 +74,12 @@ module ::AmberComponent
       # @return [String]
       def style_path
         asset_path asset_file_name(STYLE_FILE_REGEXP)
+      end
+
+      # Memoize these methods in production
+      if defined?(::Rails) && ::Rails.env.production?
+        memoize view_path
+        memoize style_path
       end
 
       private
