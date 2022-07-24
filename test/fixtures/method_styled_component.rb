@@ -3,7 +3,11 @@
 require 'ostruct'
 
 class MethodStyledComponent < AmberComponent::Base
-  def style
-    "p {font-size: bold;}"
+  style :scss do
+    <<~SCSS
+      p {
+        font-size: bold;
+      }
+    SCSS
   end
 end

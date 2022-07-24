@@ -44,6 +44,8 @@ module ::AmberComponent
     # @return [Regexp]
     STYLE_FILE_REGEXP = /^style\./.freeze
 
+    TypedContent = ::Struct.new(:type, :content, keyword_init: true)
+
     class << self
       include ::Memery
 
@@ -75,6 +77,29 @@ module ::AmberComponent
       def style_path
         asset_path asset_file_name(STYLE_FILE_REGEXP)
       end
+
+      # @param type [Symbol]
+      # @return [void]
+      def view(type = :erb, &block)
+        @method_view = TypedContent.new(type: type, content: block)
+      end
+
+      # ERB/Haml/Slim view registered through the `view` method.
+      #
+      # @return [TypedContent]
+      attr_reader :method_view
+
+      # @param content [String]
+      # @param type [Symbol]
+      # @return [void]
+      def style(type = :css, &block)
+        @method_style = TypedContent.new(type: type, content: block)
+      end
+
+      # CSS/SCSS/Sass styles registered through the `style` method.
+      #
+      # @return [TypedContent]
+      attr_reader :method_style
 
       # Memoize these methods in production
       if defined?(::Rails) && ::Rails.env.production?
@@ -125,24 +150,6 @@ module ::AmberComponent
       end
     end
 
-    protected
-
-    # Can be overridden to provide styling in class file.
-    # Should return string of CSS. When other type is provided,
-    # should return hash:
-    #
-    #   {style: String, type: String ('sass | scss | less')}.
-    #
-    # @return [String, Hash{content => String, type => String}, nil]
-    def style; end
-
-    # Can be overridden to provide small views in class file.
-    # Should return string of ERB. When other type is provided,
-    # should return hash {content: String, type: String ('erb | haml | html | md (markdown)')}.
-    #
-    # @return [String, Hash{content => String, type => String}, nil]
-    def view; end
-
     private
 
     # @param kwargs [Hash{Symbol => Object}]
@@ -174,7 +181,7 @@ module ::AmberComponent
     #
     # or:
     #
-    #   render_custom_view({content: '**Hello World**', type: 'md'})
+    #   render_custom_view({ content: '**Hello World**', type: 'md' })
     #
     # @param style [String, Hash{content => String, type => String}]
     # @return [String, nil]
@@ -183,7 +190,14 @@ module ::AmberComponent
       return view if view.is_a? String
 
       type = view[:type].to_s.downcase
-      content = view[:content].to_s
+      content = \
+        case view[:content]
+        when ::Proc
+          view[:content].call.to_s
+        else
+          view[:content].to_s
+        end
+
 
       if content.empty?
         raise EmptyView, <<~ERR.chomp
@@ -220,22 +234,27 @@ module ::AmberComponent
     # Method returning view from method in class file.
     # Usage:
     #
-    #   def view
-    #     '<h1>Hello World</h1>'
+    #   view do
+    #     <<~HTML
+    #       <h1>
+    #         Hello <%= @name %>
+    #       </h1>
+    #     HTML
     #   end
     #
     # or:
     #
-    #  def view
-    #   {
-    #     content: "<h1>Hello #{@name}</h1>",
-    #     type: 'erb'
-    #   }
-    # end
+    #   view :haml do
+    #     <<~HAML
+    #       %h1
+    #         Hello
+    #         = @name
+    #     HAML
+    #   end
     #
     # @return [String]
-    def render_view_from_method(&block)
-      render_custom_view(view, &block)
+    def render_class_method_view(&block)
+      render_custom_view(self.class.method_view, &block)
     end
 
     # Method returning view from params in view.
@@ -245,7 +264,7 @@ module ::AmberComponent
     #
     # or:
     #
-    #   <%= ExampleComponent data: data, view: {content: "<h1>Hello #{@name}</h1>", type: 'erb'} %>
+    #   <%= ExampleComponent data: data, view: { content: "<h1>Hello #{@name}</h1>", type: 'erb' } %>
     #
     # @return [String]
     def render_view_from_inline(&block)
@@ -255,7 +274,7 @@ module ::AmberComponent
     # @return [String]
     def inject_views(&block)
       view_from_file   = render_view_from_file(&block)
-      view_from_method = render_view_from_method(&block)
+      view_from_method = render_class_method_view(&block)
       view_from_inline = render_view_from_inline(&block)
 
       view_content = view_from_file unless view_from_file.empty?
@@ -283,7 +302,13 @@ module ::AmberComponent
       return style if style.is_a? ::String
 
       type = style[:type].to_s.downcase
-      content = style[:content].to_s
+      content = \
+        case style[:content]
+        when ::Proc
+          style[:content].call.to_s
+        else
+          style[:content].to_s
+        end
 
       if content.empty?
         raise EmptyStyle, <<~ERR.chomp
@@ -321,22 +346,22 @@ module ::AmberComponent
     # Method returning style from method in class file.
     # Usage:
     #
-    #   def style
+    #   style do
     #     '.my-class { color: red; }'
     #   end
     #
     # or:
     #
-    #    def style
-    #     {
-    #       style: '.my-class { color: red; }',
-    #       type: 'sass'
-    #     }
-    #   end
+    #    style :sass do
+    #     <<~SASS
+    #       .my-class
+    #         color: red
+    #     SASS
+    #    end
     #
     # @return [String]
-    def render_style_from_method
-      render_custom_style(style)
+    def render_class_method_style
+      render_custom_style(self.class.method_style)
     end
 
     # Method returning style from params in view.
@@ -355,7 +380,7 @@ module ::AmberComponent
 
     # @return [String]
     def inject_styles
-      style_content = render_style_from_file + render_style_from_method + render_style_from_inline
+      style_content = render_style_from_file + render_class_method_style + render_style_from_inline
       return if style_content.empty?
 
       ::AmberComponent::StyleInjector.inject(style_content)

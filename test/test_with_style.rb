@@ -24,7 +24,10 @@ class ::TestWithStyle < ::TestCase
     view = MethodStyledComponent.()
     doc = Nokogiri::HTML(view)
     style_tag = doc.css('style').first
-    assert_equal style_tag.text, 'p {font-size: bold;}'
+    assert_equal style_tag.text, <<~HTML
+    p {
+      font-size: bold; }
+    HTML
   end
 
   def test_that_is_able_to_build_from_class_method_with_scss

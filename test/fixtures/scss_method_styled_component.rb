@@ -3,10 +3,16 @@
 require 'ostruct'
 
 class ScssMethodStyledComponent < AmberComponent::Base
-  def style
-    {
-      content: '.card { p {font-size: bold; &:hover {color: red;}} }',
-      type: 'scss'
-    }
+  style :scss do
+    <<~SCSS
+      .card {
+        p {
+          font-size: bold;
+          &:hover {
+            color: red;
+          }
+        }
+      }
+    SCSS
   end
 end
