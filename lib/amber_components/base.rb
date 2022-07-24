@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
+require 'erb'
 require 'tilt'
 require 'active_model/callbacks'
-require 'byebug'
 
 # Abstract class which serves as a base
 # for all Amber Components.
@@ -42,10 +42,10 @@ module ::AmberComponents
     class << self
       # @param kwargs [Hash{Symbol => Object}]
       # @return [String]
-      def run(**kwargs)
+      def run(**kwargs, &block)
         comp = new(**kwargs)
 
-        comp.render
+        comp.render(&block)
       end
 
       alias call run
@@ -61,12 +61,12 @@ module ::AmberComponents
     end
 
     # @return [String]
-    def render
+    def render(&block)
       run_callbacks :render do
         view_path = asset_path(view_file_name)
         raise ViewFileNotFound, "View file for `#{self.class}` could not be found!" unless view_path
 
-        ::Tilt.new(view_path).render(self)
+        ::Tilt.new(view_path).render(self, &block)
       end
     end
 

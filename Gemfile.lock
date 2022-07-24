@@ -86,6 +86,9 @@ GEM
     erubi (1.10.0)
     globalid (1.0.0)
       activesupport (>= 5.0)
+    haml (5.2.2)
+      temple (>= 0.8.0)
+      tilt
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     jaro_winkler (1.5.4)
@@ -192,6 +195,7 @@ GEM
       tilt (~> 2.0)
       yard (~> 0.9, >= 0.9.24)
     strscan (3.0.3)
+    temple (0.8.2)
     thor (1.2.1)
     tilt (2.0.10)
     timeout (0.3.0)
@@ -213,6 +217,7 @@ PLATFORMS
 DEPENDENCIES
   amber_components!
   byebug
+  haml
   minitest (~> 5.0)
   rake (~> 13.0)
   rubocop (~> 1.21)

@@ -9,6 +9,7 @@ gem "rake", "~> 13.0"
 
 # change it to test scope
 gem "byebug"
+gem 'haml'
 gem "minitest", "~> 5.0"
 
 # change it to develop scope
