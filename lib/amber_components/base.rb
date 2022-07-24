@@ -44,6 +44,7 @@ module ::AmberComponent
     # @return [Regexp]
     STYLE_FILE_REGEXP = /^style\./.freeze
 
+    # Contains the content and type of an asset.
     TypedContent = ::Struct.new(:type, :content, keyword_init: true)
 
     class << self
@@ -78,6 +79,34 @@ module ::AmberComponent
         asset_path asset_file_name(STYLE_FILE_REGEXP)
       end
 
+      # Memoize these methods in production
+      if defined?(::Rails) && ::Rails.env.production?
+        memoize :view_path
+        memoize :style_path
+      end
+
+      # Register an inline view by returning a String from the passed block.
+      #
+      # Usage:
+      #
+      #   view do
+      #     <<~HTML
+      #       <h1>
+      #         Hello <%= @name %>
+      #       </h1>
+      #     HTML
+      #   end
+      #
+      # or:
+      #
+      #   view :haml do
+      #     <<~HAML
+      #       %h1
+      #         Hello
+      #         = @name
+      #     HAML
+      #   end
+      #
       # @param type [Symbol]
       # @return [void]
       def view(type = :erb, &block)
@@ -89,7 +118,23 @@ module ::AmberComponent
       # @return [TypedContent]
       attr_reader :method_view
 
-      # @param content [String]
+      # Register an inline style by returning a String from the passed block.
+      #
+      # Usage:
+      #
+      #   style do
+      #     '.my-class { color: red; }'
+      #   end
+      #
+      # or:
+      #
+      #    style :sass do
+      #     <<~SASS
+      #       .my-class
+      #         color: red
+      #     SASS
+      #    end
+      #
       # @param type [Symbol]
       # @return [void]
       def style(type = :css, &block)
@@ -100,12 +145,6 @@ module ::AmberComponent
       #
       # @return [TypedContent]
       attr_reader :method_style
-
-      # Memoize these methods in production
-      if defined?(::Rails) && ::Rails.env.production?
-        memoize view_path
-        memoize style_path
-      end
 
       private
 
