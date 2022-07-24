@@ -5,16 +5,17 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in amber_components.gemspec
 gemspec
 
-gem "rake", "~> 13.0"
+gem 'rake', '~> 13.0'
 
-# change it to test scope
-gem "byebug"
+# Development dependencies
+gem 'byebug'
 gem 'haml'
+gem 'rubocop', '~> 1.21'
 gem 'sassc'
-gem "minitest", "~> 5.0"
-gem 'shoulda-context', '~> 2.0'
+gem 'solargraph', '~> 0.45.0'
+gem 'yard'
 
-# change it to develop scope
-gem "rubocop", "~> 1.21"
-gem "solargraph", "~> 0.45.0"
-gem "yard"
+# Testing dependencies
+gem 'minitest', '~> 5.0'
+gem 'shoulda-context', '~> 2.0'
+gem 'simplecov'
