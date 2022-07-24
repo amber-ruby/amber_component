@@ -3,6 +3,7 @@ PATH
   specs:
     amber_components (0.0.1)
       rails (>= 6)
+      tilt (= 2.0.10)
 
 GEM
   remote: https://rubygems.org/

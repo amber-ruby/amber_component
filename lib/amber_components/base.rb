@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require 'erb'
+require 'tilt'
 require 'active_model/callbacks'
+require 'byebug'
 
 # Abstract class which serves as a base
 # for all Amber Components.
@@ -31,67 +32,86 @@ require 'active_model/callbacks'
 #
 #
 # @abstract Create a subclass to define a new component.
-class ::AmberComponents::Base
-  extend ::ActiveModel::Callbacks
+module ::AmberComponents
+  class Base
+    extend ::ActiveModel::Callbacks
 
-  class << self
+    # @return [Regexp]
+    VIEW_FILE_REGEXP = /^view\./.freeze
+
+    class << self
+      # @param kwargs [Hash{Symbol => Object}]
+      # @return [String]
+      def run(**kwargs)
+        comp = new(**kwargs)
+
+        comp.render
+      end
+
+      alias call run
+    end
+
+    define_model_callbacks :initialize, :render
+
     # @param kwargs [Hash{Symbol => Object}]
+    def initialize(**kwargs)
+      run_callbacks :initialize do
+        bind_variables(kwargs)
+      end
+    end
+
     # @return [String]
-    def run(**kwargs)
-      comp = new(**kwargs)
+    def render
+      run_callbacks :render do
+        view_path = asset_path(view_file_name)
+        raise ViewFileNotFound, "View file for `#{self.class}` could not be found!" unless view_path
 
-      comp.render
+        ::Tilt.new(view_path).render(self)
+      end
     end
 
-    alias call run
-  end
+    # @return [String, nil]
+    def view_file_name
+      asset_dir = component_asset_dir_path
+      ::Dir.entries(asset_dir).find do |file|
+        next unless ::File.file?(::File.join(asset_dir, file))
 
-  define_model_callbacks :initialize, :render
-
-  # @param kwargs [Hash{Symbol => Object}]
-  def initialize(**kwargs)
-    run_callbacks :initialize do
-      bind_variables(kwargs)
+        file.match? VIEW_FILE_REGEXP
+      end
     end
-  end
 
-  # @return [String]
-  def render
-    run_callbacks :render do
-      view_path = asset_path('view.erb')
-      ::ERB.new(::File.read(view_path)).result(local_binding)
+    # Returns a binding in the scope of this instance.
+    #
+    # @return [Binding]
+    def local_binding
+      binding
     end
-  end
 
-  # Returns a binding in the scope of this instance.
-  #
-  # @return [Binding]
-  def local_binding
-    binding
-  end
+    # @param file_name [String, nil]
+    # @return [String, nil]
+    def asset_path(file_name)
+      return unless file_name
 
-  # @param file_name [String]
-  # @return [String]
-  def asset_path(file_name)
-    ::File.join(component_asset_dir_path, file_name)
-  end
+      ::File.join(component_asset_dir_path, file_name)
+    end
 
-  # @return [String]
-  def component_asset_dir_path
-    class_const_name = self.class.name.split('::').last
-    parent_module = self.class.module_parent
-    component_file_path, = parent_module.const_source_location(class_const_name)
+    # @return [String]
+    def component_asset_dir_path
+      class_const_name = self.class.name.split('::').last
+      parent_module = self.class.module_parent
+      component_file_path, = parent_module.const_source_location(class_const_name)
 
-    component_file_path.delete_suffix('.rb')
-  end
+      component_file_path.delete_suffix('.rb')
+    end
 
-  private
+    private
 
-  # @param kwargs [Hash{Symbol => Object}]
-  # @return [void]
-  def bind_variables(kwargs)
-    kwargs.each do |key, value|
-      instance_variable_set("@#{key}", value)
+    # @param kwargs [Hash{Symbol => Object}]
+    # @return [void]
+    def bind_variables(kwargs)
+      kwargs.each do |key, value|
+        instance_variable_set("@#{key}", value)
+      end
     end
   end
 end

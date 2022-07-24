@@ -39,6 +39,7 @@ require_relative "lib/amber_components/version"
 
   # Uncomment to register a new dependency of your gem
   spec.add_dependency "rails", ">= 6"
+  spec.add_dependency "tilt", "2.0.10"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
