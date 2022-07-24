@@ -77,7 +77,7 @@ module ::AmberComponent
     # @return [String]
     def render(&block)
       run_callbacks :render do
-        element  = inject_views(block)
+        element  = inject_views(&block)
         styles   = inject_styles
         element += styles unless styles.nil?
         element
@@ -145,7 +145,7 @@ module ::AmberComponent
     #
     # @param style [String, Hash{content => String, type => String}]
     # @return [String, nil]
-    def render_custom_view(view)
+    def render_custom_view(view, &block)
       return '' unless view
       return view if view.is_a? String
 
@@ -173,12 +173,12 @@ module ::AmberComponent
         ERR
       end
 
-      ::Tilt[type].new { content }.render(self)
+      ::Tilt[type].new { content }.render(self, &block)
     end
 
     # @return [String]
-    def render_view_from_file
-      view_path = asset_path(find_asset_file_path(VIEW_FILE_REGEXP))
+    def render_view_from_file(&block)
+      view_path = asset_path(asset_file_name(VIEW_FILE_REGEXP))
       return '' unless File.exist?(view_path)
 
       ::Tilt.new(view_path).render(self, &block)
@@ -201,8 +201,8 @@ module ::AmberComponent
     # end
     #
     # @return [String]
-    def render_view_from_method
-      render_custom_view(view)
+    def render_view_from_method(&block)
+      render_custom_view(view, &block)
     end
 
     # Method returning view from params in view.
@@ -215,8 +215,8 @@ module ::AmberComponent
     #   <%= ExampleComponent data: data, view: {content: "<h1>Hello #{@name}</h1>", type: 'erb'} %>
     #
     # @return [String]
-    def render_view_from_inline
-      render_custom_view(@view)
+    def render_view_from_inline(&block)
+      render_custom_view(@view, &block)
     end
 
     # @return [String]
