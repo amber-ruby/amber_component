@@ -52,6 +52,16 @@ module ::AmberComponent
         comp.render(&block)
       end
 
+      # @return [String]
+      def asset_dir_path
+        @asset_dir_path ||= begin
+          class_const_name = name.split('::').last
+          component_file_path, = module_parent.const_source_location(class_const_name)
+
+          component_file_path.delete_suffix('.rb')
+        end
+      end
+
       alias call run
     end
 
@@ -74,31 +84,12 @@ module ::AmberComponent
       end
     end
 
-    # @return [String, nil]
-    def view_file_name
-      asset_dir = component_asset_dir_path
-      ::Dir.entries(asset_dir).find do |file|
-        next unless ::File.file?(::File.join(asset_dir, file))
-
-        file.match? VIEW_FILE_REGEXP
-      end
-    end
-
     # @param file_name [String, nil]
     # @return [String, nil]
     def asset_path(file_name)
       return unless file_name
 
-      ::File.join(component_asset_dir_path, file_name)
-    end
-
-    # @return [String]
-    def component_asset_dir_path
-      class_const_name = self.class.name.split('::').last
-      parent_module = self.class.module_parent
-      component_file_path, = parent_module.const_source_location(class_const_name)
-
-      component_file_path.delete_suffix('.rb')
+      ::File.join(self.class.asset_dir_path, file_name)
     end
 
     protected
@@ -128,7 +119,7 @@ module ::AmberComponent
     # @param type_regexp [Regexp]
     # @return [String, nil]
     def asset_file_name(type_regexp)
-      asset_dir = component_asset_dir_path
+      asset_dir = self.class.asset_dir_path
       ::Dir.entries(asset_dir).find do |file|
         next unless ::File.file?(::File.join(asset_dir, file))
 
