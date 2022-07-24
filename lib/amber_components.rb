@@ -8,6 +8,10 @@ module ::AmberComponent
   class Error < ::StandardError; end
   class ViewFileNotFound < Error; end
 
+  class EmptyView < Error; end
+  class ViewTypeNotFound < Error; end
+  class UnknownViewType < Error; end
+
   class StyleTypeNotFound < Error; end
   class UnknownStyleType < Error; end
   class EmptyStyle < Error; end
