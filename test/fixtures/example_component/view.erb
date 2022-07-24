@@ -1,5 +1,5 @@
 <div>
   <h1>Hello, <%= @user.name %>, <%= @user.email %>!</h1>
   <p>Welcome to the world of Amber Components!</p>
-  <%= yield %>
+  <%= yield if block_given? %>
 </div>

@@ -11,6 +11,7 @@ gem "rake", "~> 13.0"
 gem "byebug"
 gem 'haml'
 gem "minitest", "~> 5.0"
+gem 'shoulda-context', '~> 2.0'
 
 # change it to develop scope
 gem "rubocop", "~> 1.21"
