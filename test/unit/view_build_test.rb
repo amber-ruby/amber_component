@@ -1,10 +1,76 @@
 require 'test_helper'
 
+
 class ::ViewBuildTest < ::TestCase
+  module ::Some
+    module Namespaced
+      class Component < ::AmberComponent::Base
+        view do
+          <<~HTML
+            <h2>Some::Namespaced::Component</h2>
+            <div class="namespaced">
+              <%= yield if block_given? %>
+            </div>
+          HTML
+        end
+      end
+    end
+  end
+
+  class ::InnerComponent < ::AmberComponent::Base
+    view do
+      <<~HTML
+        <div class="inner">
+          <h1>I'm the inner component!</h1>
+          <div class="content">
+            <%= @content %>
+          </div>
+          <%=
+            Some::Namespaced.Component name: "My name" do
+              "<b>nested inside Namespaced component</b>"
+            end
+          %>
+        </div>
+      HTML
+    end
+  end
+
+  class ::OuterComponent < ::AmberComponent::Base
+    view do
+      <<~HTML
+        <div class="outer">
+          <%= InnerComponent content: 'Siemka!' %>
+        </div>
+      HTML
+    end
+  end
+
+  context 'helper methods' do
+    should 'correctly render components' do
+      view = OuterComponent.call
+      assert_equal <<-HTML, view
+<div class="outer">
+  <div class="inner">
+  <h1>I'm the inner component!</h1>
+  <div class="content">
+    Siemka!
+  </div>
+  <h2>Some::Namespaced::Component</h2>
+<div class="namespaced">
+  <b>nested inside Namespaced component</b>
+</div>
+
+</div>
+
+</div>
+      HTML
+    end
+  end
+
   context 'view from file' do
     should 'be able to build view from file' do
       view = ::ExampleComponent.call name: 'John Doe'
-      assert_equal view, <<-HTML.chomp
+      assert_equal <<-HTML.chomp, view
 <div>
   <h1>Hello, John Doe, john_doe@example.com!</h1>
   <p>Welcome to the world of Amber Components!</p>
@@ -25,7 +91,7 @@ HTML
         RubyVersionComponent.call
       end
 
-      assert_equal view, <<-HTML.chomp
+      assert_equal <<-HTML.chomp, view
 <div>
   <h1>Hello, John Doe, john_doe@example.com!</h1>
   <p>Welcome to the world of Amber Components!</p>
@@ -43,7 +109,7 @@ HTML
     should 'build haml components' do
       view = RubyVersionComponent.call
 
-      assert_equal view, <<-HTML
+      assert_equal <<-HTML, view
 <div>
 <h1>Ruby version</h1>
 <div>

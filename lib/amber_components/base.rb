@@ -39,6 +39,8 @@ module ::AmberComponent
   class Base # :nodoc:
     extend ::ActiveModel::Callbacks
 
+    include Helper
+
     # @return [Regexp]
     VIEW_FILE_REGEXP  = /^view\./.freeze
     # @return [Regexp]
@@ -153,6 +155,20 @@ module ::AmberComponent
       attr_reader :method_style
 
       private
+
+      # @param subclass [Class]
+      # @return [void]
+      def inherited(subclass)
+        # @type [Module]
+        parent_module = subclass.module_parent
+        method_body = proc do |**kwargs, &block|
+          subclass.run(**kwargs, &block)
+        end
+
+        Helper.define_method(subclass.name, &method_body) && return if parent_module.equal? ::Object
+
+        parent_module.define_singleton_method(subclass.name.split('::').last, &method_body)
+      end
 
       # @param file_name [String, nil]
       # @return [String, nil]
