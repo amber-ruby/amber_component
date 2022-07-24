@@ -52,6 +52,8 @@ module ::AmberComponent
         comp.render(&block)
       end
 
+      alias call run
+
       # @return [String]
       def asset_dir_path
         @asset_dir_path ||= begin
@@ -62,7 +64,38 @@ module ::AmberComponent
         end
       end
 
-      alias call run
+      # @return [String]
+      def view_path
+        asset_path asset_file_name(VIEW_FILE_REGEXP)
+      end
+
+      # @return [String]
+      def style_path
+        asset_path asset_file_name(STYLE_FILE_REGEXP)
+      end
+
+      private
+
+      # @param file_name [String, nil]
+      # @return [String, nil]
+      def asset_path(file_name)
+        return unless file_name
+
+        ::File.join(asset_dir_path, file_name)
+      end
+
+      # Returns the name of the file inside the asset directory
+      # of this component that matches the provided `Regexp`
+      #
+      # @param type_regexp [Regexp]
+      # @return [String, nil]
+      def asset_file_name(type_regexp)
+        ::Dir.entries(asset_dir_path).find do |file|
+          next unless ::File.file?(::File.join(asset_dir_path, file))
+
+          file.match? type_regexp
+        end
+      end
     end
 
     define_model_callbacks :initialize, :render
@@ -82,14 +115,6 @@ module ::AmberComponent
         element += styles unless styles.nil?
         element
       end
-    end
-
-    # @param file_name [String, nil]
-    # @return [String, nil]
-    def asset_path(file_name)
-      return unless file_name
-
-      ::File.join(self.class.asset_dir_path, file_name)
     end
 
     protected
@@ -178,8 +203,8 @@ module ::AmberComponent
 
     # @return [String]
     def render_view_from_file(&block)
-      view_path = asset_path(asset_file_name(VIEW_FILE_REGEXP))
-      return '' unless File.exist?(view_path)
+      view_path = self.class.view_path
+      return '' unless ::File.exist?(view_path)
 
       ::Tilt.new(view_path).render(self, &block)
     end
@@ -220,10 +245,10 @@ module ::AmberComponent
     end
 
     # @return [String]
-    def inject_views(&_block)
-      view_from_file   = render_view_from_file
-      view_from_method = render_view_from_method
-      view_from_inline = render_view_from_inline
+    def inject_views(&block)
+      view_from_file   = render_view_from_file(&block)
+      view_from_method = render_view_from_method(&block)
+      view_from_inline = render_view_from_inline(&block)
 
       view_content = view_from_file unless view_from_file.empty?
       view_content = view_from_method unless view_from_method.empty?
@@ -247,7 +272,7 @@ module ::AmberComponent
     # @return [String, nil]
     def render_custom_style(style)
       return '' unless style
-      return style if style.is_a? String
+      return style if style.is_a? ::String
 
       type = style[:type].to_s.downcase
       content = style[:content].to_s
@@ -278,7 +303,7 @@ module ::AmberComponent
     #
     # @return [String]
     def render_style_from_file
-      style_path = asset_path(asset_file_name(STYLE_FILE_REGEXP))
+      style_path = self.class.style_path
       return '' unless style_path
       return ::File.read(style_path) if style_path.split('.').last == 'css'
 
