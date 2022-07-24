@@ -14,12 +14,6 @@ class ::ExampleComponent < ::AmberComponents::BaseComponent
     ::OpenStruct.new({
       name: "#{@name}",
       email: "#{@name.gsub(' ', '').underscore}@example.com",
-      age: 42,
-      address: {
-        street: '123 Main St',
-        city: 'Anytown',
-        state: 'California'
-      }
     })
   end
 end
