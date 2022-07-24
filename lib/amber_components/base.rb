@@ -80,13 +80,6 @@ module ::AmberComponents
       end
     end
 
-    # Returns a binding in the scope of this instance.
-    #
-    # @return [Binding]
-    def local_binding
-      binding
-    end
-
     # @param file_name [String, nil]
     # @return [String, nil]
     def asset_path(file_name)
