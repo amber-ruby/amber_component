@@ -167,7 +167,7 @@ module ::AmberComponent
 
         Helper.define_method(subclass.name, &method_body) && return if parent_module.equal? ::Object
 
-        parent_module.define_method(subclass.name, &method_body)
+        parent_module.define_singleton_method(subclass.name.split('::').last, &method_body)
       end
 
       # @param file_name [String, nil]
