@@ -154,19 +154,22 @@ module ::AmberComponent
       content = style[:content].to_s
 
       if content.empty?
-        raise EmptyStyle, `
+        raise EmptyStyle, <<~ERR.chomp
           Custom style for #{self.class} from style method cannot be empty!
-          Check return value of style[:style]`.squeeze(' ')
+          Check return value of style[:style]
+        ERR
       end
       if type.empty?
-        raise StyleTypeNotFound, `
+        raise StyleTypeNotFound, <<~ERR.chomp
           Custom style type for #{self.class} from style method cannot be empty!
-          Check return value of style[:type]`.squeeze(' ')
+          Check return value of style[:type]
+        ERR
       end
       unless %w[sass scss less].include? type
-        raise UnknownStyleType, `
+        raise UnknownStyleType, <<~ERR
           Unknown style type for #{self.class} from style method!
-          Check return value of style[:type]`.squeeze(' ')
+          Check return value of style[:type]
+        ERR
       end
 
       ::Tilt[type].new { content }.render
