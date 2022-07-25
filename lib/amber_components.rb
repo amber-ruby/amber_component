@@ -1,8 +1,24 @@
 # frozen_string_literal: true
 
-require_relative 'amber_components/version'
+require 'rails'
+require 'active_support'
+require 'active_support/core_ext'
 
-module ::AmberComponents
+module ::AmberComponent
   class Error < ::StandardError; end
-  # Your code goes here...
+  class ViewFileNotFound < Error; end
+  class InvalidType < Error; end
+
+  class EmptyView < Error; end
+  class UnknownViewType < Error; end
+  class MultipleViews < Error; end
+
+  class EmptyStyle < Error; end
+  class UnknownStyleType < Error; end
+  class MultipleStyles < Error; end
 end
+
+require_relative 'amber_components/version'
+require_relative 'amber_components/helper'
+require_relative 'amber_components/typed_content'
+require_relative 'amber_components/base'

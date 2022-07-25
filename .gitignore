@@ -7,5 +7,9 @@
 /spec/reports/
 /tmp/
 
+# byebug
+.byebug_history
+
 # IDE config folders
 /.vscode
+/.VSCodeCounter

@@ -4,7 +4,7 @@ require_relative "lib/amber_components/version"
 
 ::Gem::Specification.new do |spec|
   spec.name = "amber_components"
-  spec.version = ::AmberComponents::VERSION
+  spec.version = ::AmberComponent::VERSION
   spec.authors = ['Ruby-Amber', 'Mateusz Drewniak', 'Garbus Beach']
   spec.email = ['matmg24@gmail.com', 'piotr.garbus.garbicz@gmail.com']
 
@@ -38,7 +38,9 @@ require_relative "lib/amber_components/version"
   spec.require_paths = ["lib"]
 
   # Uncomment to register a new dependency of your gem
-  # spec.add_dependency "example-gem", "~> 1.0"
+  spec.add_dependency "memery", ">= 1.4.1"
+  spec.add_dependency "rails", ">= 6"
+  spec.add_dependency "tilt", ">= 2.0.10"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
