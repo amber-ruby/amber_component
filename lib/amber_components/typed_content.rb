@@ -9,23 +9,27 @@ module ::AmberComponent
       def wrap(val)
         return val if val.is_a?(self)
 
+        unless val.respond_to?(:[])
+          raise InvalidType, "`TypedContent` should be a `Hash` or `#{self}` but was `#{val.class}` (#{val.inspect})"
+        end
+
         new(type: val[:type], content: val[:content])
       end
 
       alias [] wrap
     end
 
-    # @param type [Symbol]
-    # @param content [String, Proc]
+    # @param type [Symbol, String, nil]
+    # @param content [String, Proc, nil]
     def initialize(type:, content:)
-      @type = type
+      @type = type&.to_sym
       @content = content
       freeze
     end
 
-    # @return [Symbol]
+    # @return [Symbol, nil]
     attr_reader :type
-    # @return [String, Proc]
+    # @return [String, Proc, nil]
     attr_reader :content
 
     # Stringified content.

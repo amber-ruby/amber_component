@@ -7,6 +7,7 @@ require 'active_support/core_ext'
 module ::AmberComponent
   class Error < ::StandardError; end
   class ViewFileNotFound < Error; end
+  class InvalidType < Error; end
 
   class EmptyView < Error; end
   class UnknownViewType < Error; end

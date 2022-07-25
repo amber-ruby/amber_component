@@ -106,6 +106,32 @@ HTML
 HTML
     end
 
+    should 'build markdown component with Ruby' do
+      view = MarkdownComponent.call
+
+      assert_equal <<-HTML, view
+<h1 id="hello-john-doe">Hello John Doe!</h1>
+
+<p>Your data:</p>
+
+<ul>
+  <li>Email: john_doe@example.com</li>
+  <li>Last login: 2022-07-25 11:01:41</li>
+  <li>Balance: 200</li>
+</ul>
+
+<p>Ruby:</p>
+
+<div>
+<h1>Ruby version</h1>
+<div>
+3.1.0
+</div>
+</div>
+
+HTML
+    end
+
     should 'build haml components' do
       view = RubyVersionComponent.call
 
@@ -180,9 +206,14 @@ HTML
 
     should 'be able to render markdown' do
       class OnlyMethodMdViewComponent < ::AmberComponent::Base
+        before_render do
+          @text = "instance variable text!"
+        end
+
         view :md do
           <<~MARKDOWN
             # It Works!
+            <%= @text %>
 
             **Hello!**
           MARKDOWN
@@ -192,6 +223,7 @@ HTML
       view = OnlyMethodMdViewComponent.call name: 'John Doe'
       assert_equal view, <<~HTML
         <h1 id="it-works">It Works!</h1>
+        <p>instance variable text!</p>
 
         <p><strong>Hello!</strong></p>
       HTML

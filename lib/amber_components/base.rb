@@ -46,8 +46,15 @@ module ::AmberComponent
     VIEW_FILE_REGEXP  = /^view\./.freeze
     # @return [Regexp]
     STYLE_FILE_REGEXP = /^style\./.freeze
-    # @return [Set<String>]
-    ALLOWED_VIEW_TYPES = ::Set[:erb, :haml, :html, :md, :markdown].freeze
+
+    # View types with built-in embedded Ruby
+    #
+    # @return [Set<Symbol>]
+    VIEW_TYPES_WITH_RUBY = ::Set[:erb, :haml, :slim].freeze
+    # @return [Set<Symbol>]
+    ALLOWED_VIEW_TYPES = ::Set[:erb, :haml, :slim, :html, :md, :markdown].freeze
+    # @return [Set<Symbol>]
+    ALLOWED_STYLE_TYPES = ::Set[:sass, :scss, :less].freeze
 
     class << self
       include ::Memery
@@ -73,24 +80,49 @@ module ::AmberComponent
 
       # @return [String]
       def view_path
-        files = asset_file_name(VIEW_FILE_REGEXP)
+        asset_path view_file_name
+      end
+
+      # @return [String, nil]
+      def view_file_name
+        files = asset_file_names(VIEW_FILE_REGEXP)
         raise MultipleViews, "More than one view file for `#{name}` found!" if files.length > 1
 
-        asset_path files.first
+        files.first
+      end
+
+      # @return [Symbol]
+      def view_type
+        (view_file_name.split('.')[1..].reject { _1.match?(/erb/) }.last || 'erb')&.to_sym
       end
 
       # @return [String]
       def style_path
-        files = asset_file_name(STYLE_FILE_REGEXP)
+        asset_path style_file_name
+      end
+
+      # @return [String, nil]
+      def style_file_name
+        files = asset_file_names(STYLE_FILE_REGEXP)
         raise MultipleStyles, "More than one style file for `#{name}` found!" if files.length > 1
 
-        asset_path files.first
+        files.first
+      end
+
+      # @return [Symbol]
+      def style_type
+        (style_file_name.split('.')[1..].reject { _1.match?(/erb/) }.last || 'erb')&.to_sym
       end
 
       # Memoize these methods in production
       if defined?(::Rails) && ::Rails.env.production?
         memoize :view_path
+        memoize :view_file_name
+        memoize :view_type
+
         memoize :style_path
+        memoize :style_file_name
+        memoize :style_type
       end
 
       # Register an inline view by returning a String from the passed block.
@@ -183,7 +215,7 @@ module ::AmberComponent
       #
       # @param type_regexp [Regexp]
       # @return [Array<String>]
-      def asset_file_name(type_regexp)
+      def asset_file_names(type_regexp)
         return [] unless ::File.directory?(asset_dir_path)
 
         ::Dir.entries(asset_dir_path).select do |file|
@@ -209,7 +241,7 @@ module ::AmberComponent
         element  = inject_views(&block)
         styles   = inject_styles
         element += styles unless styles.nil?
-        element
+        element.html_safe
       end
     end
 
@@ -256,7 +288,13 @@ module ::AmberComponent
         ERR
       end
 
-      ::Tilt[type].new { content }.render(self, &block)
+      unless VIEW_TYPES_WITH_RUBY.include? type
+        # first render the content with ERB if the
+        # type does not support embedding Ruby by default
+        content = render_string(content, :erb, block)
+      end
+
+      render_string(content, type, block)
     end
 
     # @return [String]
@@ -264,7 +302,14 @@ module ::AmberComponent
       view_path = self.class.view_path
       return '' if view_path.nil? || !::File.file?(view_path)
 
-      ::Tilt.new(view_path).render(self, &block)
+      content = ::File.read(view_path)
+      type = self.class.view_type
+
+      unless VIEW_TYPES_WITH_RUBY.include? type
+        content = render_string(content, :erb, block)
+      end
+
+      render_string(content, type, block)
     end
 
     # Method returning view from method in class file.
@@ -359,14 +404,18 @@ module ::AmberComponent
           Custom style for `#{self.class}` from style method cannot be empty!
         ERR
       end
-      unless %w[sass scss less].include? type
+
+      unless ALLOWED_STYLE_TYPES.include? type
         raise UnknownStyleType, <<~ERR.squish
           Unknown style type for `#{self.class}` from style method!
           Check return value of param type in `style :[type] do`
         ERR
       end
 
-      ::Tilt[type].new { content }.render(self)
+      # first render the content with ERB
+      content = render_string(content, :erb)
+
+      render_string(content, type)
     end
 
     # Method returning style from file (style.(css|sass|scss|less)) if exists.
@@ -375,9 +424,14 @@ module ::AmberComponent
     def render_style_from_file
       style_path = self.class.style_path
       return '' unless style_path
-      return ::File.read(style_path) if style_path.split('.').last == 'css'
 
-      ::Tilt.new(style_path).render(self)
+      content = ::File.read(style_path)
+      type = self.class.style_type
+
+      return content if type == :css
+
+      content = render_string(content, :erb)
+      render_string(content, type)
     end
 
     # Method returning style from method in class file.
@@ -413,6 +467,14 @@ module ::AmberComponent
     # @return [String]
     def render_style_from_inline
       render_custom_style(@style)
+    end
+
+    # @param content [String]
+    # @param type [Symbol]
+    # @param block [Proc, nil]
+    # @return [String]
+    def render_string(content, type, block = nil)
+      ::Tilt[type].new { content }.render(self, &block)
     end
 
     # @return [String]
