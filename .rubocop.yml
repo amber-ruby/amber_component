@@ -9,7 +9,7 @@ AllCops:
     - 'test/**/*'
 
 Style/ClassMethodsDefinitions:
-  Enabled: false
+  EnforcedStyle: self_class
 
 Style/StringLiterals:
   Enabled: false

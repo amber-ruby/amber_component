@@ -45,6 +45,8 @@ class ::AmberComponent::StyleInjector
 
   # @return [String]
   def dom_tag
-    "<style type='text/css'>#{@style}</style>"
+    <<~HTML
+      <style type='text/css'>#{@style}</style>
+    HTML
   end
 end

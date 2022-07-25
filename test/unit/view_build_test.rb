@@ -180,20 +180,21 @@ HTML
 
     should 'be able to render markdown' do
       class OnlyMethodMdViewComponent < ::AmberComponent::Base
-        view :md do <<~MARKDOWN
-# It Works!
+        view :md do
+          <<~MARKDOWN
+            # It Works!
 
-**Hello!**
-MARKDOWN
+            **Hello!**
+          MARKDOWN
         end
       end
 
       view = OnlyMethodMdViewComponent.call name: 'John Doe'
-      assert_equal view, <<-HTML
-<h1>It Works!</h1>
+      assert_equal view, <<~HTML
+        <h1 id="it-works">It Works!</h1>
 
-<p><strong>Hello!</strong></p>
-HTML
+        <p><strong>Hello!</strong></p>
+      HTML
     end
 
     should 'raise EmptyView error whem empty view given' do

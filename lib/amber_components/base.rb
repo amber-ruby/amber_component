@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'set'
 require 'erb'
 require 'tilt'
 require 'active_model/callbacks'
@@ -45,9 +46,8 @@ module ::AmberComponent
     VIEW_FILE_REGEXP  = /^view\./.freeze
     # @return [Regexp]
     STYLE_FILE_REGEXP = /^style\./.freeze
-
-    # Contains the content and type of an asset.
-    TypedContent = ::Struct.new(:type, :content, keyword_init: true)
+    # @return [Set<String>]
+    ALLOWED_VIEW_TYPES = ::Set[:erb, :haml, :html, :md, :markdown].freeze
 
     class << self
       include ::Memery
@@ -184,7 +184,7 @@ module ::AmberComponent
       # @param type_regexp [Regexp]
       # @return [Array<String>]
       def asset_file_name(type_regexp)
-        return [] unless File.directory?(asset_dir_path)
+        return [] unless ::File.directory?(asset_dir_path)
 
         ::Dir.entries(asset_dir_path).select do |file|
           next unless ::File.file?(::File.join(asset_dir_path, file))
@@ -224,28 +224,24 @@ module ::AmberComponent
     end
 
     # Helper method to render view from string or with other provided type.
+    #
     # Usage:
     #
     #   render_custom_view('<h1>Hello World</h1>')
     #
     # or:
     #
-    #   render_custom_view({ content: '**Hello World**', type: 'md' })
+    #   render_custom_view content: '**Hello World**', type: 'md'
     #
-    # @param style [String, Hash{content => String, type => String}]
+    # @param style [TypedContent, Hash{Symbol => String, Symbol, Proc}, String]
     # @return [String, nil]
     def render_custom_view(view, &block)
       return '' unless view
+      return view if view.is_a?(::String)
 
-      type = view[:type].to_s.downcase
-      content = \
-        case view[:content]
-        when ::Proc
-          view[:content].call.to_s
-        else
-          view[:content].to_s
-        end
-
+      view = TypedContent.wrap(view)
+      type = view.type
+      content = view.to_s
 
       if content.empty?
         raise EmptyView, <<~ERR.squish
@@ -253,7 +249,7 @@ module ::AmberComponent
         ERR
       end
 
-      unless %w[erb haml html md markdown].include? type
+      unless ALLOWED_VIEW_TYPES.include? type
         raise UnknownViewType, <<~ERR.squish
           Unknown view type for `#{self.class}` from view method!
           Check return value of param type in `view :[type] do`
@@ -310,10 +306,10 @@ module ::AmberComponent
     def render_view_from_inline(&block)
       data = \
         if @view.is_a? String
-          {
+          TypedContent.new(
             type: :erb,
             content: @view
-          }
+          )
         else
           @view
         end
@@ -339,28 +335,24 @@ module ::AmberComponent
     end
 
     # Helper method to render style from css string or with other provided type.
+    #
     # Usage:
     #
     #   render_custom_style('.my-class { color: red; }')
     #
     # or:
     #
-    #   render_custom_style({style: '.my-class { color: red; }', type: 'sass'})
+    #   render_custom_style style: '.my-class { color: red; }', type: 'sass'
     #
-    # @param style [String, Hash{content => String, type => String}]
+    # @param style [TypedContent, Hash{Symbol => Symbol, String, Proc}, String]
     # @return [String, nil]
     def render_custom_style(style)
       return '' unless style
-      return style if style.is_a? ::String
+      return style if style.is_a?(::String)
 
-      type = style[:type].to_s.downcase
-      content = \
-        case style[:content]
-        when ::Proc
-          style[:content].call.to_s
-        else
-          style[:content].to_s
-        end
+      style = TypedContent.wrap(style)
+      type = style.type
+      content = style.to_s
 
       if content.empty?
         raise EmptyStyle, <<~ERR.squish

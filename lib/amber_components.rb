@@ -19,4 +19,5 @@ end
 
 require_relative 'amber_components/version'
 require_relative 'amber_components/helper'
+require_relative 'amber_components/typed_content'
 require_relative 'amber_components/base'
