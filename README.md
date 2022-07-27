@@ -34,7 +34,7 @@ This generator will create all necessary files for a functional
 component.
 
 ```sh
-$ rails generate amber_component:component
+$ rails generate amber_component:component SomeComponent
 ```
 
 ## Development

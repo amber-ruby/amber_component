@@ -39,8 +39,12 @@ require_relative './style_injector'
 # @abstract Create a subclass to define a new component.
 module ::AmberComponent
   class Base # :nodoc:
+    # for defining callback such as `after_initialize`
     extend ::ActiveModel::Callbacks
+    # provides methods such as `form_with`, `button_to`, `link_to`
     include ::ActionView::Helpers
+    # provides methods for escaping HTML, JSON, XML etc
+    include ::ERB::Util
 
     include Helper
 
