@@ -8,7 +8,7 @@ require 'rake/testtask'
   t.libs << 'test'
   t.libs << 'test/fixtures'
   # ignore tests of rails apps
-  t.test_files = ::FileList['test/**/*_test.rb'] - ::FileList['test/apps/**/*_test.rb']
+  t.test_files = ::FileList['test/**/*_test.rb'] - ::FileList['test/dummy/**/*_test.rb']
 end
 
 require 'rubocop/rake_task'

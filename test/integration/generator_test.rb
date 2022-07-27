@@ -7,7 +7,7 @@ require 'debug'
 module Integration
   class GeneratorTest < ::TestCase
     # @return [String]
-    RAILS_PROJECT_PATH = 'test/apps/rails_7'
+    RAILS_PROJECT_PATH = 'test/dummy/rails_7'
     # @return [String]
     COMPONENTS_ROOT_PATH = 'app/components'
     # @return [String]
