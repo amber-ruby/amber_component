@@ -5,48 +5,42 @@ require 'erb'
 require 'tilt'
 require 'memery'
 require 'active_model/callbacks'
-require 'action_view/helpers'
+require 'action_view'
 
 require_relative './style_injector'
 
-# Abstract class which serves as a base
-# for all Amber Components.
-#
-# There are a few life cycle callbacks that can be defined.
-# The same way as in `ActiveRecord` models and `ActionController` controllers.
-#
-# - before_render
-# - around_render
-# - after_render
-# - before_initialize
-# - around_initialize
-# - after_initialize
-#
-#    class ButtonComponent < ::AmberComponent::Base
-#      # You can provide a Symbol of the method that should be called
-#      before_render :before_render_method
-#      # Or provide a block that will be executed
-#      after_initialize do
-#        # Your code here
-#      end
-#
-#      def before_render_method
-#        # Your code here
-#      end
-#    end
-#
-#
-# @abstract Create a subclass to define a new component.
 module ::AmberComponent
-  class Base # :nodoc:
+  # Abstract class which serves as a base
+  # for all Amber Components.
+  #
+  # There are a few life cycle callbacks that can be defined.
+  # The same way as in `ActiveRecord` models and `ActionController` controllers.
+  #
+  # - before_render
+  # - around_render
+  # - after_render
+  # - before_initialize
+  # - around_initialize
+  # - after_initialize
+  #
+  #    class ButtonComponent < ::AmberComponent::Base
+  #      # You can provide a Symbol of the method that should be called
+  #      before_render :before_render_method
+  #      # Or provide a block that will be executed
+  #      after_initialize do
+  #        # Your code here
+  #      end
+  #
+  #      def before_render_method
+  #        # Your code here
+  #      end
+  #    end
+  #
+  #
+  # @abstract Create a subclass to define a new component.
+  class Base < ::ActionView::Base
     # for defining callback such as `after_initialize`
     extend ::ActiveModel::Callbacks
-    # provides methods such as `form_with`, `button_to`, `link_to`
-    include ::ActionView::Helpers
-    # provides methods for escaping HTML, JSON, XML etc
-    include ::ERB::Util
-
-    include Helper
 
     # @return [Regexp]
     VIEW_FILE_REGEXP  = /^view\./.freeze
@@ -74,7 +68,6 @@ module ::AmberComponent
       end
 
       alias call run
-
 
       # @return [String]
       memoize def asset_dir_path
@@ -203,9 +196,24 @@ module ::AmberComponent
           subclass.run(**kwargs, &block)
         end
 
-        Helper.define_method(subclass.name, &method_body) && return if parent_module.equal? ::Object
+        define_helper_method(subclass, Helper, subclass.name, method_body) && return if parent_module.equal?(::Object)
 
-        parent_module.define_singleton_method(subclass.name.split('::').last, &method_body)
+        define_helper_method(subclass, parent_module.singleton_class, subclass.name.split('::').last, method_body)
+      end
+
+      # @param component [Class]
+      # @param mod [Module, Class]
+      # @param method_name [String, Symbol]
+      # @param body [Proc]
+      def define_helper_method(component, mod, method_name, body)
+        mod.define_method(method_name, &body)
+
+        return if defined?(::Rails) && ::Rails.env.production?
+
+        ::Warning.warn <<~WARN if mod.instance_methods.include?(method_name)
+          `#{component}` shadows the name of an already existing `#{mod}` method `#{method_name}`.
+          Consider renaming this component, because the original method will be overwritten.
+        WARN
       end
 
       # @param file_name [String, nil]
