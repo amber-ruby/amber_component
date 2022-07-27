@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    amber_component (0.0.1)
+    amber_component (0.0.2)
       memery (>= 1.4.1)
       rails (>= 6)
       tilt (>= 2.0.10)
