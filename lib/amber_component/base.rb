@@ -211,8 +211,9 @@ module ::AmberComponent
         return if defined?(::Rails) && ::Rails.env.production?
 
         ::Warning.warn <<~WARN if mod.instance_methods.include?(method_name)
-          `#{component}` shadows the name of an already existing `#{mod}` method `#{method_name}`.
-          Consider renaming this component, because the original method will be overwritten.
+          #{caller(0, 1).first}: warning:
+              `#{component}` shadows the name of an already existing `#{mod}` method `#{method_name}`.
+              Consider renaming this component, because the original method will be overwritten.
         WARN
       end
 
