@@ -38,8 +38,10 @@ require_relative "lib/amber_component/version"
   spec.require_paths = ["lib"]
 
   # Uncomment to register a new dependency of your gem
+  spec.add_dependency "actionview", ">= 6"
+  spec.add_dependency "activemodel", ">= 6"
+  spec.add_dependency "activesupport", ">= 6"
   spec.add_dependency "memery", ">= 1.4.1"
-  spec.add_dependency "rails", ">= 6"
   spec.add_dependency "tilt", ">= 2.0.10"
 
   # For more information and examples about making a new gem, check out our

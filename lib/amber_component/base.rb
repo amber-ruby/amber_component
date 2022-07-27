@@ -3,8 +3,9 @@
 require 'set'
 require 'erb'
 require 'tilt'
-require 'active_model/callbacks'
 require 'memery'
+require 'active_model/callbacks'
+require 'action_view/helpers'
 
 require_relative './style_injector'
 
@@ -39,6 +40,7 @@ require_relative './style_injector'
 module ::AmberComponent
   class Base # :nodoc:
     extend ::ActiveModel::Callbacks
+    include ::ActionView::Helpers
 
     include Helper
 
@@ -245,8 +247,15 @@ module ::AmberComponent
       end
     end
 
-    def render_in(context)
-      byebug
+    # Method used internally by Rails to render an object
+    # passed to the `render` method.
+    #
+    #   render MyComponent.new(some: :attribute)
+    #
+    # @param _context [ActionView::Base]
+    # @return [String]
+    def render_in(_context)
+      render
     end
 
     private

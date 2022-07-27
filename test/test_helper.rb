@@ -15,7 +15,9 @@ require 'shoulda-context'
 require 'byebug'
 
 require 'haml'
+require 'sassc'
 require 'nokogiri'
+require 'git'
 
 # Load all files in the test/fixtures directory
 ::Dir['./test/fixtures/*_component.rb'].each do |file|
