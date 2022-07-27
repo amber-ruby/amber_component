@@ -14,9 +14,28 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
     $ gem install amber_component
 
+If you're using a Rails application there's an installation generator that you should run:
+
+```sh
+$ rails generate amber_component:install
+```
+
 ## Usage
 
 TODO: Write usage instructions here
+
+### Generators
+
+#### Component
+
+There's a generator for quickly generating new components.
+
+This generator will create all necessary files for a functional
+component.
+
+```sh
+$ rails generate amber_component:component
+```
 
 ## Development
 
