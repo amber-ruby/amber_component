@@ -245,6 +245,10 @@ module ::AmberComponent
       end
     end
 
+    def render_in(context)
+      byebug
+    end
+
     private
 
     # @param kwargs [Hash{Symbol => Object}]

@@ -18,7 +18,7 @@ module ::AmberComponent
   class MultipleStyles < Error; end
 end
 
-require_relative 'amber_components/version'
-require_relative 'amber_components/helper'
-require_relative 'amber_components/typed_content'
-require_relative 'amber_components/base'
+require_relative 'amber_component/version'
+require_relative 'amber_component/helper'
+require_relative 'amber_component/typed_content'
+require_relative 'amber_component/base'

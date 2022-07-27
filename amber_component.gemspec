@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "lib/amber_components/version"
+require_relative "lib/amber_component/version"
 
 ::Gem::Specification.new do |spec|
-  spec.name = "amber_components"
+  spec.name = "amber_component"
   spec.version = ::AmberComponent::VERSION
   spec.authors = ['Ruby-Amber', 'Mateusz Drewniak', 'Garbus Beach']
   spec.email = ['matmg24@gmail.com', 'piotr.garbus.garbicz@gmail.com']
@@ -15,7 +15,7 @@ require_relative "lib/amber_components/version"
 
     They work like mini controllers which are bound with their view.
   DESC
-  spec.homepage = 'https://github.com/amber-ruby/amber_components'
+  spec.homepage = 'https://github.com/amber-ruby/amber_component'
   spec.license = 'MIT'
   spec.required_ruby_version = ">= 2.6.0"
 
