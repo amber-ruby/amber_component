@@ -1,6 +1,5 @@
 require 'test_helper'
 
-
 class ::ViewBuildTest < ::TestCase
   module ::Some
     module Namespaced
@@ -48,21 +47,21 @@ class ::ViewBuildTest < ::TestCase
   context 'helper methods' do
     should 'correctly render components' do
       view = OuterComponent.call
-      assert_equal <<-HTML, view
-<div class="outer">
-  <div class="inner">
-  <h1>I'm the inner component!</h1>
-  <div class="content">
-    Siemka!
-  </div>
-  <h2>Some::Namespaced::Component</h2>
-<div class="namespaced">
-  <b>nested inside Namespaced component</b>
-</div>
+      assert_equal <<~HTML, view
+        <div class="outer">
+          <div class="inner">
+          <h1>I'm the inner component!</h1>
+          <div class="content">
+            Siemka!
+          </div>
+          <h2>Some::Namespaced::Component</h2>
+        <div class="namespaced">
+          <b>nested inside Namespaced component</b>
+        </div>
 
-</div>
+        </div>
 
-</div>
+        </div>
       HTML
     end
   end
@@ -70,13 +69,13 @@ class ::ViewBuildTest < ::TestCase
   context 'view from file' do
     should 'be able to build view from file' do
       view = ::ExampleComponent.call name: 'John Doe'
-      assert_equal <<-HTML.chomp, view
-<div>
-  <h1>Hello, John Doe, john_doe@example.com!</h1>
-  <p>Welcome to the world of Amber Components!</p>
-  
-</div>
-HTML
+      assert_equal <<~HTML.chomp, view
+        <div>
+          <h1>Hello, John Doe, john_doe@example.com!</h1>
+          <p>Welcome to the world of Amber Components!</p>
+          
+        </div>
+      HTML
       doc = Nokogiri::HTML(view)
 
       header = doc.css('h1').first
@@ -91,58 +90,58 @@ HTML
         RubyVersionComponent.call
       end
 
-      assert_equal <<-HTML.chomp, view
-<div>
-  <h1>Hello, John Doe, john_doe@example.com!</h1>
-  <p>Welcome to the world of Amber Components!</p>
-  <div>
-<h1>Ruby version</h1>
-<div>
-3.1.0
-</div>
-</div>
+      assert_equal <<~HTML.chomp, view
+        <div>
+          <h1>Hello, John Doe, john_doe@example.com!</h1>
+          <p>Welcome to the world of Amber Components!</p>
+          <div>
+        <h1>Ruby version</h1>
+        <div>
+        3.1.0
+        </div>
+        </div>
 
-</div>
-HTML
+        </div>
+      HTML
     end
 
     should 'build markdown component with Ruby' do
       view = MarkdownComponent.call
 
-      assert_equal <<-HTML, view
-<h1 id="hello-john-doe">Hello John Doe!</h1>
+      assert_equal <<~HTML, view
+        <h1 id="hello-john-doe">Hello John Doe!</h1>
 
-<p>Your data:</p>
+        <p>Your data:</p>
 
-<ul>
-  <li>Email: john_doe@example.com</li>
-  <li>Last login: 2022-07-25 11:01:41</li>
-  <li>Balance: 200</li>
-</ul>
+        <ul>
+          <li>Email: john_doe@example.com</li>
+          <li>Last login: 2022-07-25 11:01:41</li>
+          <li>Balance: 200</li>
+        </ul>
 
-<p>Ruby:</p>
+        <p>Ruby:</p>
 
-<div>
-<h1>Ruby version</h1>
-<div>
-3.1.0
-</div>
-</div>
+        <div>
+        <h1>Ruby version</h1>
+        <div>
+        3.1.0
+        </div>
+        </div>
 
-HTML
+      HTML
     end
 
     should 'build haml components' do
       view = RubyVersionComponent.call
 
-      assert_equal <<-HTML, view
-<div>
-<h1>Ruby version</h1>
-<div>
-3.1.0
-</div>
-</div>
-HTML
+      assert_equal <<~HTML, view
+        <div>
+        <h1>Ruby version</h1>
+        <div>
+        3.1.0
+        </div>
+        </div>
+      HTML
     end
 
     should 'raise error when no view given' do
@@ -182,26 +181,27 @@ HTML
 
     should 'render correct view type from class method' do
       class OnlyMethodHamlViewComponent < ::AmberComponent::Base
-        view :haml do <<~HAML
-%h1 It Works!
-.card
-  .card-title= @name
-  .card-content
-    ="Hello, " + @name + "!"
-HAML
+        view :haml do
+          <<~HAML
+            %h1 It Works!
+            .card
+              .card-title= @name
+              .card-content
+                ="Hello, " + @name + "!"
+          HAML
         end
       end
 
       view = OnlyMethodHamlViewComponent.call name: 'John Doe'
-      assert_equal view, <<-HTML
-<h1>It Works!</h1>
-<div class='card'>
-<div class='card-title'>John Doe</div>
-<div class='card-content'>
-Hello, John Doe!
-</div>
-</div>
-HTML
+      assert_equal view, <<~HTML
+        <h1>It Works!</h1>
+        <div class='card'>
+        <div class='card-title'>John Doe</div>
+        <div class='card-content'>
+        Hello, John Doe!
+        </div>
+        </div>
+      HTML
     end
 
     should 'be able to render markdown' do
@@ -241,9 +241,9 @@ HTML
       end
 
       assert_equal error.message, <<~TEXT.squish
-Custom view for `ViewBuildTest::EmptyMethodViewComponent`
-from view method cannot be empty!
-TEXT
+        Custom view for `ViewBuildTest::EmptyMethodViewComponent`
+        from view method cannot be empty!
+      TEXT
     end
 
     should 'raise UnknownViewType error when unsuported type passed' do
@@ -258,19 +258,20 @@ TEXT
       end
 
       assert_equal error.message, <<~TEXT.squish
-Unknown view type for `ViewBuildTest::UnknownTypeMethodViewComponent` from view method!
-Check return value of param type in `view :[type] do`
-TEXT
+        Unknown view type for `ViewBuildTest::UnknownTypeMethodViewComponent` from view method!
+        Check return value of param type in `view :[type] do`
+      TEXT
     end
 
     should 'be able to render block when passed from class method' do
       class BlockInViewMethodComponent < ::AmberComponent::Base
-        view :haml do<<~HAML
-.card
-  .card-title= @title
-  .card-content
-    = yield if block_given?
-HAML
+        view :haml do
+          <<~HAML
+            .card
+              .card-title= @title
+              .card-content
+                = yield if block_given?
+          HAML
         end
       end
 
@@ -284,14 +285,14 @@ HAML
         NestedComponent.call
       end
 
-      assert_equal view, <<-HTML
-<div class='card'>
-<div class='card-title'>Hello World!</div>
-<div class='card-content'>
-I'm your message passed by block!
-</div>
-</div>
-HTML
+      assert_equal view, <<~HTML
+        <div class='card'>
+        <div class='card-title'>Hello World!</div>
+        <div class='card-content'>
+        I'm your message passed by block!
+        </div>
+        </div>
+      HTML
     end
   end
 
@@ -338,9 +339,9 @@ HTML
       end
 
       assert_equal error.message, <<~TEXT.squish
-Custom view for `ViewBuildTest::EmptyParamViewComponent`
-from view method cannot be empty!
-TEXT
+        Custom view for `ViewBuildTest::EmptyParamViewComponent`
+        from view method cannot be empty!
+      TEXT
     end
 
     should 'raise UnknownViewType error when unsuported type passed' do
@@ -356,9 +357,9 @@ TEXT
       end
 
       assert_equal error.message, <<~TEXT.squish
-Unknown view type for `ViewBuildTest::UnknownTypeParamViewComponent` from view method!
-Check return value of param type in `view :[type] do`
-TEXT
+        Unknown view type for `ViewBuildTest::UnknownTypeParamViewComponent` from view method!
+        Check return value of param type in `view :[type] do`
+      TEXT
     end
 
     should 'be able to render block when passed from param' do
