@@ -17,6 +17,7 @@ gem 'solargraph', '~> 0.45.0'
 gem 'yard'
 
 # Testing dependencies
+gem 'railties'
 gem 'minitest', '~> 5.0'
 gem 'shoulda-context', '~> 2.0'
 gem 'simplecov', require: false

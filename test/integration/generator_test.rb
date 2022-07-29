@@ -24,7 +24,7 @@ module Integration
       # initialize a new Git repo in the root of the Rails project
       @git = ::Git.init(::Dir.pwd)
       @git.add
-      # commit the entires project
+      # commit the entire project
       @git.commit('.')
       assert @git.diff.none?
     end

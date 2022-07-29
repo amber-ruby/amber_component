@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'rails'
 require 'active_support'
 require 'active_support/core_ext'
 
@@ -21,4 +20,5 @@ end
 require_relative 'amber_component/version'
 require_relative 'amber_component/helper'
 require_relative 'amber_component/typed_content'
+require_relative 'amber_component/template_handler'
 require_relative 'amber_component/base'

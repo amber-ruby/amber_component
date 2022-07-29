@@ -67,13 +67,21 @@ module ::AmberComponent
         comp.render(&block)
       end
 
+      # @return [String]
+      def const_name
+        name.split('::').last
+      end
+
+      # @return [Array(String, Integer)] File path followed by line number.
+      def source_location
+        module_parent.const_source_location const_name
+      end
+
       alias call run
 
       # @return [String]
       memoize def asset_dir_path
-        class_const_name = name.split('::').last
-        component_file_path, = module_parent.const_source_location(class_const_name)
-
+        component_file_path, = source_location
         component_file_path.delete_suffix('.rb')
       end
 
@@ -114,7 +122,7 @@ module ::AmberComponent
       end
 
       # Memoize these methods in production
-      if defined?(::Rails) && ::Rails.env.production?
+      if ::ENV['RAILS_ENV'] == 'production'
         memoize :view_path
         memoize :view_file_name
         memoize :view_type
@@ -196,9 +204,16 @@ module ::AmberComponent
           subclass.run(**kwargs, &block)
         end
 
-        define_helper_method(subclass, Helper, subclass.name, method_body) && return if parent_module.equal?(::Object)
+        if parent_module.equal?(::Object)
+          method_name = subclass.name
+          define_helper_method(subclass, Helper, method_name, method_body)
+          define_helper_method(subclass, Helper, method_name.underscore, method_body)
+          return
+        end
 
-        define_helper_method(subclass, parent_module.singleton_class, subclass.name.split('::').last, method_body)
+        method_name = subclass.const_name
+        define_helper_method(subclass, parent_module.singleton_class, method_name, method_body)
+        define_helper_method(subclass, parent_module.singleton_class, method_name.underscore, method_body)
       end
 
       # @param component [Class]
@@ -208,7 +223,7 @@ module ::AmberComponent
       def define_helper_method(component, mod, method_name, body)
         mod.define_method(method_name, &body)
 
-        return if defined?(::Rails) && ::Rails.env.production?
+        return if ::ENV['RAILS_ENV'] == 'production'
 
         ::Warning.warn <<~WARN if mod.instance_methods.include?(method_name)
           #{caller(0, 1).first}: warning:
@@ -500,7 +515,7 @@ module ::AmberComponent
     # @param block [Proc, nil]
     # @return [String]
     def render_string(content, type, block = nil)
-      ::Tilt[type].new { content }.render(self, &block)
+      TemplateHandler.render_from_string(self, content, type, block)
     end
 
     # @return [String]
@@ -508,7 +523,7 @@ module ::AmberComponent
       style_content = render_style_from_file + render_class_method_style + render_style_from_inline
       return if style_content.empty?
 
-      ::AmberComponent::StyleInjector.inject(style_content)
+      StyleInjector.inject(style_content)
     end
   end
 end

@@ -11,6 +11,7 @@ $LOAD_PATH.unshift ::File.expand_path("../lib", __dir__)
 require 'amber_component'
 
 require 'minitest/autorun'
+require 'rails/railtie'
 require 'shoulda-context'
 require 'byebug'
 

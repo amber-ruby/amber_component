@@ -3,12 +3,12 @@ require 'test_helper'
 class ::ViewBuildTest < ::TestCase
   module ::Some
     module Namespaced
-      class Component < ::AmberComponent::Base
+      class AwesomeComponent < ::AmberComponent::Base
         view do
           <<~HTML
-            <h2>Some::Namespaced::Component</h2>
+            <h2><%= self.class %> <%= @name %></h2>
             <div class="namespaced">
-              <%= yield if block_given? %>
+              <%= yield.html_safe if block_given? %>
             </div>
           HTML
         end
@@ -24,11 +24,12 @@ class ::ViewBuildTest < ::TestCase
           <div class="content">
             <%= @content %>
           </div>
-          <%=
-            Some::Namespaced.Component name: "My name" do
-              "<b>nested inside Namespaced component</b>"
-            end
-          %>
+          <%= Some::Namespaced.AwesomeComponent name: "CamelCased" do %>
+            <b>nested inside Namespaced component with CamelCased method</b>
+          <% end %>
+          <%= Some::Namespaced.awesome_component name: "snake_cased" do %>
+            <b>nested inside Namespaced component with snake_cased method</b>
+          <% end %>
         </div>
       HTML
     end
@@ -38,7 +39,8 @@ class ::ViewBuildTest < ::TestCase
     view do
       <<~HTML
         <div class="outer">
-          <%= InnerComponent content: 'Siemka!' %>
+          <%= InnerComponent content: 'CamelCased!' %>
+          <%= inner_component content: 'snake_cased!' %>
         </div>
       HTML
     end
@@ -52,13 +54,47 @@ class ::ViewBuildTest < ::TestCase
           <div class="inner">
           <h1>I'm the inner component!</h1>
           <div class="content">
-            Siemka!
+            CamelCased!
           </div>
-          <h2>Some::Namespaced::Component</h2>
+          
+            <b>nested inside Namespaced component with CamelCased method</b>
+        <h2>Some::Namespaced::AwesomeComponent CamelCased</h2>
         <div class="namespaced">
-          <b>nested inside Namespaced component</b>
+          
+            <b>nested inside Namespaced component with CamelCased method</b>
+
+        </div>
+          
+            <b>nested inside Namespaced component with snake_cased method</b>
+        <h2>Some::Namespaced::AwesomeComponent snake_cased</h2>
+        <div class="namespaced">
+          
+            <b>nested inside Namespaced component with snake_cased method</b>
+
+        </div>
         </div>
 
+          <div class="inner">
+          <h1>I'm the inner component!</h1>
+          <div class="content">
+            snake_cased!
+          </div>
+          
+            <b>nested inside Namespaced component with CamelCased method</b>
+        <h2>Some::Namespaced::AwesomeComponent CamelCased</h2>
+        <div class="namespaced">
+          
+            <b>nested inside Namespaced component with CamelCased method</b>
+
+        </div>
+          
+            <b>nested inside Namespaced component with snake_cased method</b>
+        <h2>Some::Namespaced::AwesomeComponent snake_cased</h2>
+        <div class="namespaced">
+          
+            <b>nested inside Namespaced component with snake_cased method</b>
+
+        </div>
         </div>
 
         </div>
@@ -101,6 +137,23 @@ class ::ViewBuildTest < ::TestCase
         </div>
         </div>
 
+        </div>
+      HTML
+    end
+
+    should 'render ActionView helpers' do
+      view = ActionViewHelpersComponent.call
+
+      assert_equal <<~HTML, view
+        <div>
+          <h1>Action View helpers</h1>
+          <img alt="Some Image" src="/images/assets/some_image.png" />
+
+          <form action="http://localhost:3000/form" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" autocomplete="off" />
+            <input type="text" name="title" />
+        </form>
+          <a href="http://link.to">Link to:</a>
+          <form class="button_to" method="post" action="http://button.to"><input type="submit" value="Button to:" /></form>
         </div>
       HTML
     end
@@ -378,7 +431,7 @@ class ::ViewBuildTest < ::TestCase
         NestedComponent.call
       end
 
-      assert_equal view, "Hello World! I'm your message passed by block!"
+      assert_equal "Hello World! I'm your message passed by block!", view
     end
   end
 end
