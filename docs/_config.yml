@@ -14,10 +14,7 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 title: Amber Component
-description: >-
-  A simple component library which seamlessly hooks into your Rails project and allows you to create simple backend components.
-  They work like mini controllers which are bound with their view.
-baseurl: / # the subpath of your site, e.g. /blog
+baseurl: '' # the subpath of your site, e.g. /blog
 url: https://ambercomponent.com # the base hostname & protocol for your site, e.g. http://example.com
 
 theme: just-the-docs
@@ -26,7 +23,22 @@ theme: just-the-docs
 color_scheme: "amber_component"
 
 permalink: pretty
-exclude: ["node_modules/", "*.gemspec", "*.gem", "Gemfile", "Gemfile.lock", "package.json", "package-lock.json",  "script/", "LICENSE.txt", "lib/", "bin/", "README.md", "Rakefile" , "docs/tests/"]
+exclude: [
+  "node_modules/",
+  "*.gemspec",
+  "*.gem",
+  "Gemfile",
+  "Gemfile.lock",
+  "package.json",
+  "package-lock.json",
+  "script/",
+  "LICENSE.txt",
+  "lib/",
+  "bin/",
+  "README.md",
+  "Rakefile" ,
+  "docs/tests/"
+]
 
 # Regression tests
 # By default, the pages in /docs/tests are excluded when the ste is built.
@@ -69,7 +81,7 @@ heading_anchors: true
 
 # Aux links for the upper right navigation
 aux_links:
-  Amber Component on GitHub:
+  AmberComponent on GitHub:
     - https://github.com/amber-ruby/amber_component
 
 # Makes Aux links open in a new tab. Default is false
@@ -87,7 +99,13 @@ back_to_top: true
 back_to_top_text: "Back to top"
 
 footer_content: >-
-  Copyright &copy; Garbus Beach, Mateusz Drewniak. Made with ❤️ for ruby.
+  Copyright &copy;
+  <script type="text/javascript">
+    document.write(new Date().getFullYear());
+  </script>
+  <a class="personal-link" href="{{ site.data.amber_component.garbus_beach_url }}">Garbus Beach</a>,
+  <a class="personal-link" href="{{ site.data.amber_component.mateusz_drewniak_url }}">Mateusz Drewniak</a>.
+  Made with ❤️ for ruby.
 
 # Footer last edited timestamp
 last_edit_timestamp: false # show or hide edit time - page must have `last_modified_date` defined in the frontmatter
