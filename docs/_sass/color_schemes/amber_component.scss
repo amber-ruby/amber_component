@@ -1,0 +1,11 @@
+@import url(https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css);
+
+@import './color_schemes/dark.scss';
+@import './../variables.scss';
+
+$link-color: $amber_color;
+$btn-primary-color: $amber_color;
+$body-font-family: 'Fira Code', Menlo, Consolas, Monospace;
+$mono-font-family: $body-font-family;
+// $body-background-color: $amber_black;
+// $sidebar-color: $amber_black;

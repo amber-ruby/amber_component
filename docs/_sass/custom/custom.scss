@@ -1,0 +1,60 @@
+@import './../variables.scss';
+
+.site-footer {
+  display: none;
+}
+
+.search {
+  input.search-input {
+    color: white;
+  }
+}
+
+.btn {
+  &:focus,
+  &:focus:hover,
+  &.selected:focus {
+    box-shadow: 0 0 0 3px rgba($amber_color, 0.25);
+  }
+}
+
+footer {
+  a.personal-link {
+    color: #5c5962;
+    text-decoration: underline;
+
+    &:hover {
+      color: $amber_color;
+    }
+  }
+}
+
+.site-header {
+  a.site-title {
+    &:hover {
+      background-image: none;
+    }
+  }
+}
+
+.nav-list {
+  .nav-list-item {
+    a.nav-list-link {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    &.active {
+      // margin: 0 16px;
+      border-radius: 2px;
+      background-color: rgba($amber_color, 0.3);
+
+      a.nav-list-link {
+        &.active {
+          // padding-left: 18px;
+          color: $amber_color;
+          background-image: none;
+        }
+      }
+    }
+  }
+}
