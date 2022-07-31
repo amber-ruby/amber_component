@@ -133,7 +133,7 @@ class ::ViewBuildTest < ::TestCase
           <div>
         <h1>Ruby version</h1>
         <div>
-        3.1.0
+        #{::RUBY_VERSION}
         </div>
         </div>
 
@@ -177,7 +177,7 @@ class ::ViewBuildTest < ::TestCase
         <div>
         <h1>Ruby version</h1>
         <div>
-        3.1.0
+        #{::RUBY_VERSION}
         </div>
         </div>
 
@@ -191,7 +191,7 @@ class ::ViewBuildTest < ::TestCase
         <div>
         <h1>Ruby version</h1>
         <div>
-        3.1.0
+        #{::RUBY_VERSION}
         </div>
         </div>
       HTML
