@@ -2,7 +2,6 @@
 
 require 'test_helper'
 require 'fileutils'
-require 'debug'
 
 module Integration
   class GeneratorTest < ::TestCase
