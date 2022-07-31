@@ -18,7 +18,7 @@ module ::AmberComponent
 end
 
 require_relative 'amber_component/version'
-require_relative 'amber_component/helper'
+require_relative 'amber_component/helpers'
 require_relative 'amber_component/typed_content'
 require_relative 'amber_component/template_handler'
 require_relative 'amber_component/base'

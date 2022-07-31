@@ -41,6 +41,9 @@ module ::AmberComponent
   class Base < ::ActionView::Base
     # for defining callback such as `after_initialize`
     extend ::ActiveModel::Callbacks
+    extend ::AmberComponent::Helpers::ClassHelper
+
+    include ::AmberComponent::Helpers::CssHelper
 
     # @return [Regexp]
     VIEW_FILE_REGEXP  = /^view\./.freeze
@@ -67,23 +70,15 @@ module ::AmberComponent
         comp.render(&block)
       end
 
-      # @return [String]
-      def const_name
-        name.split('::').last
-      end
-
-      # @return [Array(String, Integer)] File path followed by line number.
-      def source_location
-        module_parent.const_source_location const_name
-      end
-
       alias call run
 
       # @return [String]
-      memoize def asset_dir_path
+      def asset_dir_path
         component_file_path, = source_location
         component_file_path.delete_suffix('.rb')
       end
+
+      memoize :asset_dir_path
 
       # @return [String]
       def view_path
@@ -199,15 +194,15 @@ module ::AmberComponent
       # @return [void]
       def inherited(subclass)
         # @type [Module]
-        parent_module = subclass.module_parent
         method_body = proc do |**kwargs, &block|
           subclass.run(**kwargs, &block)
         end
+        parent_module = subclass.module_parent
 
         if parent_module.equal?(::Object)
           method_name = subclass.name
-          define_helper_method(subclass, Helper, method_name, method_body)
-          define_helper_method(subclass, Helper, method_name.underscore, method_body)
+          define_helper_method(subclass, Helpers::ComponentHelper, method_name, method_body)
+          define_helper_method(subclass, Helpers::ComponentHelper, method_name.underscore, method_body)
           return
         end
 
@@ -300,21 +295,21 @@ module ::AmberComponent
     #
     # Usage:
     #
-    #   render_custom_view('<h1>Hello World</h1>')
+    #   render_view_from_content('<h1>Hello World</h1>')
     #
     # or:
     #
-    #   render_custom_view content: '**Hello World**', type: 'md'
+    #   render_view_from_content content: '**Hello World**', type: 'md'
     #
-    # @param style [TypedContent, Hash{Symbol => String, Symbol, Proc}, String]
+    # @param content [TypedContent, Hash{Symbol => String, Symbol, Proc}, String]
     # @return [String, nil]
-    def render_custom_view(view, &block)
-      return '' unless view
-      return view if view.is_a?(::String)
+    def render_view_from_content(content, &block)
+      return '' unless content
+      return content if content.is_a?(::String)
 
-      view = TypedContent.wrap(view)
-      type = view.type
-      content = view.to_s
+      content = TypedContent.wrap(content)
+      type = content.type
+      content = content.to_s
 
       if content.empty?
         raise EmptyView, <<~ERR.squish
@@ -376,7 +371,7 @@ module ::AmberComponent
     #
     # @return [String]
     def render_class_method_view(&block)
-      render_custom_view(self.class.method_view, &block)
+      render_view_from_content(self.class.method_view, &block)
     end
 
     # Method returning view from params in view.
@@ -400,7 +395,7 @@ module ::AmberComponent
           @view
         end
 
-      render_custom_view(data, &block)
+      render_view_from_content(data, &block)
     end
 
     # @return [String]
@@ -424,21 +419,21 @@ module ::AmberComponent
     #
     # Usage:
     #
-    #   render_custom_style('.my-class { color: red; }')
+    #   render_style_from_content('.my-class { color: red; }')
     #
     # or:
     #
-    #   render_custom_style style: '.my-class { color: red; }', type: 'sass'
+    #   render_style_from_content content: '.my-class { color: red; }', type: :sass
     #
-    # @param style [TypedContent, Hash{Symbol => Symbol, String, Proc}, String]
+    # @param content [TypedContent, Hash{Symbol => Symbol, String, Proc}, String]
     # @return [String, nil]
-    def render_custom_style(style)
-      return '' unless style
-      return style if style.is_a?(::String)
+    def render_style_from_content(content)
+      return '' unless content
+      return content if content.is_a?(::String)
 
-      style = TypedContent.wrap(style)
-      type = style.type
-      content = style.to_s
+      content = TypedContent.wrap(content)
+      type = content.type
+      content = content.to_s
 
       if content.empty?
         raise EmptyStyle, <<~ERR.squish
@@ -493,7 +488,7 @@ module ::AmberComponent
     #
     # @return [String]
     def render_class_method_style
-      render_custom_style(self.class.method_style)
+      render_style_from_content(self.class.method_style)
     end
 
     # Method returning style from params in view.
@@ -503,11 +498,11 @@ module ::AmberComponent
     #
     # or:
     #
-    #   <%= ExampleComponent data: data, style: {style: '.my-class { color: red; }', type: 'sass'} %>
+    #   <%= ExampleComponent data: data, style: { content: '.my-class { color: red; }', type: :sass } %>
     #
     # @return [String]
     def render_style_from_inline
-      render_custom_style(@style)
+      render_style_from_content(@style)
     end
 
     # @param content [String]
