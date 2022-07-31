@@ -35,6 +35,25 @@ jobs:
         run: bundle exec rake test:unit
       - name: Run integration tests
         run: bundle exec rake test:integration
+      - name: Code Coverage
+        run: |
+          echo "COVERAGE=$(./bin/code_coverage)" >> $GITHUB_ENV
+          REF=${{ github.ref }}
+          echo "github.ref: $REF"
+          IFS='/' read -ra PATHS <<< "$REF"
+          BRANCH_NAME="${PATHS[1]}_${PATHS[2]}"
+          echo $BRANCH_NAME
+          echo "BRANCH=$(echo ${BRANCH_NAME})" >> $GITHUB_ENV
+      - name: Create the Coverage Badge
+        uses: schneegans/dynamic-badges-action@v1.0.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: 6a095c79278b074d79feaa4f8ceeb2a8
+          filename: amber_component__${{ env.BRANCH }}.json
+          label: Test Coverage
+          message: ${{ env.COVERAGE }}
+          color: green
+          namedLogo: ruby
 
   lint:
     runs-on: ubuntu-latest

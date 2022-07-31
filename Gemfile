@@ -22,3 +22,4 @@ gem 'minitest', '~> 5.0'
 gem 'railties'
 gem 'shoulda-context', '~> 2.0'
 gem 'simplecov', require: false
+gem 'simplecov-cobertura', require: false
