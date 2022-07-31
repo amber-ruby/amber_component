@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+class <%= class_name %> < ::ApplicationComponent
+  # Your code goes here
+
+  after_initialize do
+    @time = ::Time.now
+  end
+end

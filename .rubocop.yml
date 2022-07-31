@@ -1,5 +1,15 @@
+AllCops:
+  TargetRubyVersion: 2.6
+  SuggestExtensions: false
+  EnabledByDefault: true
+  Exclude:
+    - 'bin/*'
+    - 'vendor/bundle/**/*'
+    - 'spec/**/*'
+    - 'test/**/*'
+
 Style/ClassMethodsDefinitions:
-  Enabled: false
+  EnforcedStyle: self_class
 
 Style/StringLiterals:
   Enabled: false
@@ -92,9 +102,6 @@ Style/RedundantArgument:
 Lint/MissingSuper:
   Enabled: false
 
-Layout/LineLength:
-  Enabled: false
-
 Style/Documentation:
   Enabled: true
 
@@ -170,15 +177,8 @@ Bundler/GemComment:
 Bundler/GemVersion:
   Enabled: false
 
-AllCops:
-  TargetRubyVersion: 2.6
-  SuggestExtensions: false
-  EnabledByDefault: true
-  Exclude:
-    - 'bin/*'
-    - 'vendor/bundle/**/*'
-    - 'spec/**/*'
-    - 'test/**/*'
-
 Layout/LineLength:
   Max: 120
+
+Style/IfUnlessModifier:
+  Enabled: false
