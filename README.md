@@ -1,3 +1,5 @@
+![CI badge](https://github.com/amber-ruby/amber_component/actions/workflows/ci_ruby.yml/badge.svg)
+
 # AmberComponent
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/amber_component`. To experiment with that code, run `bin/console` for an interactive prompt.
