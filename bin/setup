@@ -5,7 +5,8 @@ set -vx
 
 bundle install
 
-pwd
+echo pwd
+ls
 cd test/apps/rails_7
 bundle install
 
