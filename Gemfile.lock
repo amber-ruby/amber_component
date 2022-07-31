@@ -35,6 +35,9 @@ GEM
     backport (1.2.0)
     benchmark (0.2.0)
     builder (3.2.4)
+    bundler-audit (0.9.1)
+      bundler (>= 1.2.0, < 3)
+      thor (~> 1.0)
     byebug (11.1.3)
     concurrent-ruby (1.1.10)
     crass (1.0.6)
@@ -150,6 +153,7 @@ PLATFORMS
 
 DEPENDENCIES
   amber_component!
+  bundler-audit
   byebug
   git
   haml

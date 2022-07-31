@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'fileutils'
-require 'byebug'
 
 module ::AmberComponent
   module Generators
+    # A Rails generator which creates a new Amber component.
     class ComponentGenerator < ::Rails::Generators::NamedBase
       desc 'Generate a new component'
       source_root ::File.expand_path('templates', __dir__)

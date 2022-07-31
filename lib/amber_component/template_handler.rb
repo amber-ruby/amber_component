@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module ::AmberComponent
+  # Provides code which handles rendering different
+  # template languages.
   module TemplateHandler
     class << self
       # @param context [AmberComponent::Base]

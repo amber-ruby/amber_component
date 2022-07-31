@@ -8,7 +8,7 @@ module ::AmberComponent
     # Handles rendering ERB with Rails-like syntax
     class ERB < ::ActionView::Template::Handlers::ERB::Erubi
       def initialize(input, properties = {})
-        properties[:bufvar]     ||= "@output_buffer"
+        properties[:bufvar] ||= "@output_buffer"
         properties[:preamble] = "#{properties[:bufvar]}=#{::ActionView::OutputBuffer}.new;"
         super
       end
