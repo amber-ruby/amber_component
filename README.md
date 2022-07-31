@@ -1,4 +1,6 @@
+[![license](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 ![CI badge](https://github.com/amber-ruby/amber_component/actions/workflows/ci_ruby.yml/badge.svg)
+![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Verseth/6a095c79278b074d79feaa4f8ceeb2a8/raw/amber_component__heads_main.json)
 
 # AmberComponent
 
