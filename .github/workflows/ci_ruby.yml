@@ -17,6 +17,10 @@ jobs:
         ruby-version: ['2.7', '3.0', '3.1']
 
     steps:
+      - name: Configure Git
+        run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Install Ruby and gems
