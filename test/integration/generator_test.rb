@@ -40,7 +40,7 @@ module Integration
     end
 
     should 'install and uninstall the gem' do
-      assert system "rails g #{INSTALL_GENERATOR}"
+      assert system "bundle exec rails g #{INSTALL_GENERATOR}"
       @git.add
       assert_equal 1, @git.diff.entries.size
       diff = file_diff component_path('application_component.rb')
@@ -62,7 +62,7 @@ module Integration
         +end
       PATCH
 
-      assert system "rails d #{INSTALL_GENERATOR}"
+      assert system "bundle exec rails d #{INSTALL_GENERATOR}"
       @git.add
       assert_equal 0, @git.diff.entries.size
     end
@@ -70,7 +70,7 @@ module Integration
     should 'generate and destroy a new component' do
       %w[some some_component Some SomeComponent].each do |passed_name|
         # with snake_cased name
-        assert system "rails g #{COMPONENT_GENERATOR} #{passed_name}"
+        assert system "bundle exec rails g #{COMPONENT_GENERATOR} #{passed_name}"
         @git.add
         assert_equal 4, @git.diff.entries.size
 
@@ -118,7 +118,7 @@ module Integration
           +end
         PATCH
 
-        assert system "rails d #{COMPONENT_GENERATOR} #{passed_name}"
+        assert system "bundle exec rails d #{COMPONENT_GENERATOR} #{passed_name}"
         @git.add
         assert_equal 0, @git.diff.entries.size
       end
@@ -127,7 +127,7 @@ module Integration
     should 'generate and destroy a new namespaced component' do
       %w[some/awesome/wonderful some/awesome/wonderful_component Some::Awesome::Wonderful Some::Awesome::WonderfulComponent].each do |passed_name|
         # with snake_cased name
-        assert system "rails g #{COMPONENT_GENERATOR} #{passed_name}"
+        assert system "bundle exec rails g #{COMPONENT_GENERATOR} #{passed_name}"
         @git.add
         assert_equal 4, @git.diff.entries.size
 
@@ -175,7 +175,7 @@ module Integration
           +end
         PATCH
 
-        assert system "rails d #{COMPONENT_GENERATOR} #{passed_name}"
+        assert system "bundle exec rails d #{COMPONENT_GENERATOR} #{passed_name}"
         @git.add
         assert_equal 0, @git.diff.entries.size
       end
