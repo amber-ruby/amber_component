@@ -12,7 +12,7 @@ require 'amber_component'
 
 require 'byebug'
 require 'minitest/autorun'
-require 'rails/all'
+require 'rails/railtie'
 require 'shoulda-context'
 
 require 'haml'

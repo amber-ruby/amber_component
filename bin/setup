@@ -4,7 +4,8 @@ IFS=$'\n\t'
 set -vx
 
 PROJECT_ROOT=$PWD
-if $CI; then
+CI=${CI:-}
+if [ ! -z "$CI" ]; then
   bundle config --local path $PROJECT_ROOT/vendor/bundle
 fi
 
@@ -12,7 +13,7 @@ bundle install
 
 cd test/dummy/rails_7
 
-if $CI; then
+if [ ! -z "$CI" ]; then
   bundle config --local path $PROJECT_ROOT/vendor/bundle
 fi
 bundle install
