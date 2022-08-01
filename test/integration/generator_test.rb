@@ -14,7 +14,7 @@ module Integration
     # @return [String]
     INSTALL_GENERATOR = 'amber_component:install'
     # @return [String]
-    COMPONENT_GENERATOR = 'amber_component:component'
+    COMPONENT_GENERATOR = 'amber_component'
 
     def setup
       @original_pwd = ::Dir.pwd
