@@ -7,8 +7,6 @@ require 'memery'
 require 'active_model/callbacks'
 require 'action_view'
 
-require_relative './style_injector'
-
 module ::AmberComponent
   # Abstract class which serves as a base
   # for all Amber Components.
@@ -46,8 +44,6 @@ module ::AmberComponent
     include Helpers::CssHelper
     include Views::InstanceMethods
     extend  Views::ClassMethods
-    include Styles::InstanceMethods
-    extend  Styles::ClassMethods
     include Assets::InstanceMethods
     extend  Assets::ClassMethods
     include Rendering::InstanceMethods
@@ -63,10 +59,6 @@ module ::AmberComponent
         memoize :view_path
         memoize :view_file_name
         memoize :view_type
-
-        memoize :style_path
-        memoize :style_file_name
-        memoize :style_type
       end
 
       private

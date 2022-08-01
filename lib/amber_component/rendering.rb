@@ -22,8 +22,8 @@ module ::AmberComponent
       def render(&block)
         run_callbacks :render do
           element  = render_view(&block)
-          styles   = inject_styles
-          element += styles unless styles.nil?
+          # styles   = inject_styles
+          # element += styles unless styles.nil?
           element.html_safe
         end
       end
