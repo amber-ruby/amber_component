@@ -1,6 +1,6 @@
 [![license](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ad84af499e9791933a87/maintainability)](https://codeclimate.com/github/amber-ruby/amber_component/maintainability)
-![CI badge](https://github.com/amber-ruby/amber_component/actions/workflows/ci_ruby.yml/badge.svg)
+[![CI badge](https://github.com/amber-ruby/amber_component/actions/workflows/ci_ruby.yml/badge.svg)](https://github.com/amber-ruby/amber_component/actions/workflows/ci_ruby.yml)
 ![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Verseth/6a095c79278b074d79feaa4f8ceeb2a8/raw/amber_component__heads_main.json)
 
 # AmberComponent
