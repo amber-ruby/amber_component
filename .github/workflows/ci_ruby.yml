@@ -31,10 +31,8 @@ jobs:
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Run the setup script
         run: ./bin/setup
-      - name: Run unit tests
-        run: bundle exec rake test:unit
-      - name: Run integration tests
-        run: bundle exec rake test:integration
+      - name: Run tests
+        run: bundle exec rake test
       - name: Code Coverage
         run: |
           echo "COVERAGE=$(./bin/code_coverage)" >> $GITHUB_ENV
