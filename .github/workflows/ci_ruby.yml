@@ -50,7 +50,7 @@ jobs:
           filename: amber_component__${{ env.BRANCH }}.json
           label: Test Coverage
           message: ${{ env.COVERAGE }}
-          color: green
+          color: success
           namedLogo: ruby
 
   lint:

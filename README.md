@@ -1,13 +1,17 @@
 [![license](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
+[![Gem Version](https://img.shields.io/gem/v/amber_component.svg?style=flat)](https://rubygems.org/gems/amber_component)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ad84af499e9791933a87/maintainability)](https://codeclimate.com/github/amber-ruby/amber_component/maintainability)
-![CI badge](https://github.com/amber-ruby/amber_component/actions/workflows/ci_ruby.yml/badge.svg)
-![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Verseth/6a095c79278b074d79feaa4f8ceeb2a8/raw/amber_component__heads_main.json)
+[![CI badge](https://github.com/amber-ruby/amber_component/actions/workflows/ci_ruby.yml/badge.svg)](https://github.com/amber-ruby/amber_component/actions/workflows/ci_ruby.yml)
+[![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Verseth/6a095c79278b074d79feaa4f8ceeb2a8/raw/amber_component__heads_main.json)](https://github.com/amber-ruby/amber_component/actions/workflows/ci_ruby.yml)
+![Downloads](https://ruby-gem-downloads-badge.herokuapp.com/amber_component)
+
+<img src="banner.png" width="500px" style="margin-bottom: 2rem;"/>
 
 # AmberComponent
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/amber_component`. To experiment with that code, run `bin/console` for an interactive prompt.
+A simple component library which seamlessly hooks into your Rails project and allows you to create simple backend components. They work like mini controllers which are bound with their view.
 
-TODO: Delete this and the text above, and describe your gem
+Created by [Garbus Beach](https://github.com/garbusbeach) and [Mateusz Drewniak](https://github.com/Verseth).
 
 ## Installation
 
@@ -39,7 +43,7 @@ This generator will create all necessary files for a functional
 component.
 
 ```sh
-$ rails generate amber_component:component SomeComponent
+$ rails generate amber_component Button
 ```
 
 ## Contributing
