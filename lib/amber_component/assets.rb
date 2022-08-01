@@ -11,6 +11,14 @@ module ::AmberComponent
         component_file_path.delete_suffix('.rb')
       end
 
+      # Get an array of all folders containing component assets.
+      # This method should only be used on the parent class `AmberComponent::Base` or `ApplicationComponent`.
+      #
+      # @return [Array<String>]
+      def all_asset_dir_paths
+        subclasses.map(&:asset_dir_path)
+      end
+
       # @param file_name [String, nil]
       # @return [String, nil]
       def asset_path(file_name)
