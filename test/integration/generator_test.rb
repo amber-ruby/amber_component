@@ -42,10 +42,10 @@ module Integration
     should 'install and uninstall the gem' do
       assert rails "g #{INSTALL_GENERATOR}"
       @git.add
-      assert_equal 1, @git.diff.entries.size
+      assert_equal 3, @git.diff.entries.size
+
       diff = file_diff component_path('application_component.rb')
       assert_equal 'new', diff.type
-
       assert diff.patch.end_with?(<<~PATCH.chomp)
         +# frozen_string_literal: true
         +
@@ -60,6 +60,18 @@ module Integration
         +  # routes.
         +  include ::Rails.application.routes.url_helpers
         +end
+      PATCH
+
+      diff = file_diff 'app/assets/stylesheets/application.css'
+      assert_equal 'modified', diff.type
+      assert diff.patch.include?(<<~PATCH.chomp)
+        + *= require_tree ./../../components
+      PATCH
+
+      diff = file_diff 'config/initializers/assets.rb'
+      assert_equal 'modified', diff.type
+      assert diff.patch.include?(<<~PATCH.chomp)
+        +::Rails.application.config.assets.paths << ::File.join(::Rails.root, 'app', 'components')
       PATCH
 
       assert rails "d #{INSTALL_GENERATOR}"

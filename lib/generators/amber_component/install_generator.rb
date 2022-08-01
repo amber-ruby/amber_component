@@ -13,6 +13,14 @@ module ::AmberComponent
       # copy rake tasks
       def copy_tasks
         copy_file 'application_component.rb', 'app/components/application_component.rb'
+
+        inject_into_file 'app/assets/stylesheets/application.css', after: "*= require_tree .\n" do
+          " *= require_tree ./../../components\n"
+        end
+
+        append_file 'config/initializers/assets.rb', <<~RUBY
+          ::Rails.application.config.assets.paths << ::File.join(::Rails.root, 'app', 'components')
+        RUBY
       end
     end
   end
