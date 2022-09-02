@@ -79,8 +79,6 @@ GEM
     addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     bindex (0.8.1)
-    bootsnap (1.12.0)
-      msgpack (~> 1.2)
     builder (3.2.4)
     byebug (11.1.3)
     capybara (3.37.1)
@@ -125,7 +123,6 @@ GEM
     method_source (1.0.0)
     mini_mime (1.1.2)
     minitest (5.16.2)
-    msgpack (1.5.4)
     net-imap (0.2.3)
       digest
       net-protocol
@@ -230,7 +227,6 @@ PLATFORMS
 
 DEPENDENCIES
   amber_component!
-  bootsnap
   byebug
   capybara
   debug
@@ -246,9 +242,6 @@ DEPENDENCIES
   tzinfo-data
   web-console
   webdrivers
-
-RUBY VERSION
-   ruby 3.1.0p0
 
 BUNDLED WITH
    2.3.3

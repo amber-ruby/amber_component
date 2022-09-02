@@ -2,7 +2,6 @@
 
 require 'test_helper'
 require 'fileutils'
-require 'debug'
 
 module Integration
   class GeneratorTest < ::TestCase
@@ -15,7 +14,7 @@ module Integration
     # @return [String]
     INSTALL_GENERATOR = 'amber_component:install'
     # @return [String]
-    COMPONENT_GENERATOR = 'amber_component:component'
+    COMPONENT_GENERATOR = 'amber_component'
 
     def setup
       @original_pwd = ::Dir.pwd
@@ -24,7 +23,7 @@ module Integration
       # initialize a new Git repo in the root of the Rails project
       @git = ::Git.init(::Dir.pwd)
       @git.add
-      # commit the entires project
+      # commit the entire project
       @git.commit('.')
       assert @git.diff.none?
     end
@@ -41,12 +40,12 @@ module Integration
     end
 
     should 'install and uninstall the gem' do
-      assert system "rails g #{INSTALL_GENERATOR}"
+      assert rails "g #{INSTALL_GENERATOR}"
       @git.add
-      assert_equal 1, @git.diff.entries.size
+      assert_equal 3, @git.diff.entries.size
+
       diff = file_diff component_path('application_component.rb')
       assert_equal 'new', diff.type
-
       assert diff.patch.end_with?(<<~PATCH.chomp)
         +# frozen_string_literal: true
         +
@@ -63,7 +62,19 @@ module Integration
         +end
       PATCH
 
-      assert system "rails d #{INSTALL_GENERATOR}"
+      diff = file_diff 'app/assets/stylesheets/application.css'
+      assert_equal 'modified', diff.type
+      assert diff.patch.include?(<<~PATCH.chomp)
+        + *= require_tree ./../../components
+      PATCH
+
+      diff = file_diff 'config/initializers/assets.rb'
+      assert_equal 'modified', diff.type
+      assert diff.patch.include?(<<~PATCH.chomp)
+        +::Rails.application.config.assets.paths << ::File.join(::Rails.root, 'app', 'components')
+      PATCH
+
+      assert rails "d #{INSTALL_GENERATOR}"
       @git.add
       assert_equal 0, @git.diff.entries.size
     end
@@ -71,7 +82,7 @@ module Integration
     should 'generate and destroy a new component' do
       %w[some some_component Some SomeComponent].each do |passed_name|
         # with snake_cased name
-        assert system "rails g #{COMPONENT_GENERATOR} #{passed_name}"
+        assert rails "g #{COMPONENT_GENERATOR} #{passed_name}"
         @git.add
         assert_equal 4, @git.diff.entries.size
 
@@ -119,7 +130,7 @@ module Integration
           +end
         PATCH
 
-        assert system "rails d #{COMPONENT_GENERATOR} #{passed_name}"
+        assert rails "d #{COMPONENT_GENERATOR} #{passed_name}"
         @git.add
         assert_equal 0, @git.diff.entries.size
       end
@@ -128,7 +139,7 @@ module Integration
     should 'generate and destroy a new namespaced component' do
       %w[some/awesome/wonderful some/awesome/wonderful_component Some::Awesome::Wonderful Some::Awesome::WonderfulComponent].each do |passed_name|
         # with snake_cased name
-        assert system "rails g #{COMPONENT_GENERATOR} #{passed_name}"
+        assert rails "g #{COMPONENT_GENERATOR} #{passed_name}"
         @git.add
         assert_equal 4, @git.diff.entries.size
 
@@ -176,13 +187,20 @@ module Integration
           +end
         PATCH
 
-        assert system "rails d #{COMPONENT_GENERATOR} #{passed_name}"
+        assert rails "d #{COMPONENT_GENERATOR} #{passed_name}"
         @git.add
         assert_equal 0, @git.diff.entries.size
       end
     end
 
     private
+
+    # @param command [String]
+    # @return [Boolean]
+    def rails(command)
+      gemfile_path = ::File.expand_path 'Gemfile'
+      system "BUNDLE_GEMFILE=#{gemfile_path} bundle exec rails #{command}"
+    end
 
     # @param file_name [String]
     # @return [Git::Diff::DiffFile, nil]

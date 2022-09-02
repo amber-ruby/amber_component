@@ -3,9 +3,19 @@ set -euo pipefail
 IFS=$'\n\t'
 set -vx
 
+PROJECT_ROOT=$PWD
+CI=${CI:-}
+if [ ! -z "$CI" ]; then
+  bundle config --local path $PROJECT_ROOT/vendor/bundle
+fi
+
 bundle install
 
-cd test/apps/rails_7
+cd test/dummy/rails_7
+
+if [ ! -z "$CI" ]; then
+  bundle config --local path $PROJECT_ROOT/vendor/bundle
+fi
 bundle install
 
 # Do any other automated setup that you need to do here

@@ -1,8 +1,17 @@
+[![license](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
+[![Gem Version](https://img.shields.io/gem/v/amber_component.svg?style=flat)](https://rubygems.org/gems/amber_component)
+[![Maintainability](https://api.codeclimate.com/v1/badges/ad84af499e9791933a87/maintainability)](https://codeclimate.com/github/amber-ruby/amber_component/maintainability)
+[![CI badge](https://github.com/amber-ruby/amber_component/actions/workflows/ci_ruby.yml/badge.svg)](https://github.com/amber-ruby/amber_component/actions/workflows/ci_ruby.yml)
+[![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Verseth/6a095c79278b074d79feaa4f8ceeb2a8/raw/amber_component__heads_main.json)](https://github.com/amber-ruby/amber_component/actions/workflows/ci_ruby.yml)
+[![Downloads](https://ruby-gem-downloads-badge.herokuapp.com/amber_component)]((https://rubygems.org/gems/amber_component))
+
+<img src="banner.png" width="500px" style="margin-bottom: 2rem;"/>
+
 # AmberComponent
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/amber_component`. To experiment with that code, run `bin/console` for an interactive prompt.
+A simple component library which seamlessly hooks into your Rails project and allows you to create simple backend components. They work like mini controllers which are bound with their view.
 
-TODO: Delete this and the text above, and describe your gem
+Created by [Garbus Beach](https://github.com/garbusbeach) and [Mateusz Drewniak](https://github.com/Verseth).
 
 ## Installation
 
@@ -34,14 +43,8 @@ This generator will create all necessary files for a functional
 component.
 
 ```sh
-$ rails generate amber_component:component SomeComponent
+$ rails generate amber_component Button
 ```
-
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 
@@ -51,7 +54,63 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/amber-
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
-## Problems
+## Development
+
+### Setup
+
+To setup this gem for development you should use the setup script.
+
+```sh
+$ bin/setup
+```
+
+### Console
+
+You can access an IRB with this entire gem preloaded like this
+
+```sh
+$ bin/console
+```
+
+### Tests
+
+You can run all tests with:
+
+```sh
+$ rake test
+```
+
+All unit tests:
+
+```sh
+$ rake test:unit
+```
+
+All integration tests:
+
+```sh
+$ rake test:integration
+```
+
+### Release
+
+To release a new version, update the version number in `version.rb`, and then run
+
+```sh
+$ bundle exec rake release
+```
+
+This will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
+### Local installation
+
+To install this gem onto your local machine, run
+
+```sh
+$ bundle exec rake install
+```
+
+### Problems with bundling
 
 > An error occurred while installing ffi (1.15.5), and Bundler cannot continue.
 >

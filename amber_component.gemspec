@@ -17,7 +17,7 @@ require_relative "lib/amber_component/version"
   DESC
   spec.homepage = 'https://github.com/amber-ruby/amber_component'
   spec.license = 'MIT'
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 2.7.0"
 
   # spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 

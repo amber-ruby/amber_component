@@ -11,6 +11,22 @@ require 'rake/testtask'
   t.test_files = ::FileList['test/**/*_test.rb'] - ::FileList['test/dummy/**/*_test.rb']
 end
 
+::Rake::TestTask.new('test:unit') do |t|
+  t.libs << 'lib'
+  t.libs << 'test'
+  t.libs << 'test/fixtures'
+  # ignore tests of rails apps
+  t.test_files = ::FileList['test/unit/**/*_test.rb']
+end
+
+::Rake::TestTask.new('test:integration') do |t|
+  t.libs << 'lib'
+  t.libs << 'test'
+  t.libs << 'test/fixtures'
+  # ignore tests of rails apps
+  t.test_files = ::FileList['test/integration/**/*_test.rb']
+end
+
 require 'rubocop/rake_task'
 
 ::RuboCop::RakeTask.new

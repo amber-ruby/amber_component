@@ -12,8 +12,7 @@ class ::AmberComponent::StyleInjector
     # @param style [String]
     # @return [String, nil]
     def inject(style)
-      injector = new(style)
-      injector.run
+      new(style).call
     end
   end
 
@@ -23,7 +22,7 @@ class ::AmberComponent::StyleInjector
   end
 
   # @return [void]
-  def run
+  def call
     return dom_tag unless dom_available?
 
     insert_style_in_head

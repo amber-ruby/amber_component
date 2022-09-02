@@ -1,0 +1,11 @@
+<div>
+  <h1>Action View helpers</h1>
+  <%= image_tag 'assets/some_image.png', alt: 'Some Image' %>
+
+  <%= form_with url: 'http://localhost:3000/form' do |f| %>
+    <%= f.text_field :title %>
+  <% end %>
+
+  <%= link_to 'Link to:', 'http://link.to' %>
+  <%= button_to 'Button to:', 'http://button.to' %>
+</div>
