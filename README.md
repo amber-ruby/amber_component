@@ -29,10 +29,6 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-TODO: Write usage instructions here
-
-### Generators
-
 If you're using a Rails application there's an installation generator that you should run:
 
 ```sh
@@ -41,7 +37,7 @@ $ rails generate amber_component:install
 
 ## Contribute
 
-Do you want to contribute to AmberComponent? Open the issues page and check for the help wanted label! But before you start coding, please read our [Contributing Guide](https://github.com/amber-ruby/amber_component/CONTRIBUTING.md).
+Do you want to contribute to AmberComponent? Open the issues page and check for the help wanted label! But before you start coding, please read our [Contributing Guide](https://github.com/amber-ruby/amber_component/blob/main/CONTRIBUTING.md).
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/amber-ruby/amber_component.
 
