@@ -62,7 +62,7 @@ module ::AmberComponent
 
       # @return [Symbol]
       def view_type
-        (view_file_name.split('.')[1..].reject { _1.match?(/erb/) }.last || 'erb')&.to_sym
+        (view_file_name.split('.')[1..].grep_v(/erb/).last || 'erb')&.to_sym
       end
     end
 
