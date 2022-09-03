@@ -15,7 +15,7 @@ module ::AmberComponent
 
       # Get the exact place where this class/module has been defined.
       #
-      # @return [Array(String, Integer)] File path followed by line number.
+      # @return [Array(String, Integer), Array(Boolean, Integer)] File path followed by line number.
       def source_location
         module_parent.const_source_location const_name
       end
