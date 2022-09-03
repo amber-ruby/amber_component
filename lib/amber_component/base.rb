@@ -66,6 +66,7 @@ module ::AmberComponent
       # @param subclass [Class]
       # @return [void]
       def inherited(subclass)
+        super
         # @type [Module]
         method_body = proc do |**kwargs, &block|
           subclass.render(**kwargs, &block)
