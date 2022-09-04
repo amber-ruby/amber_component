@@ -1,4 +1,5 @@
 @import './../variables.scss';
+@import './amber_code_theme.scss';
 
 .site-footer {
   display: none;
@@ -45,26 +46,26 @@ footer {
       &.active{
         color: $amber_color;
         background-image: none;
-        background-color: rgba($amber_color, 0.15);
+        background-color: rgba($amber_color, 0.05);
       }
 
       &:hover {
         background-image: unset;
-        background-color: rgba($amber_color, 0.15);
+        background-color: rgba($amber_color, 0.05);
       }
     }
 
     a.nav-list-expander {
       &:hover {
         background-image: unset;
-        background-color: rgba($amber_color, 0.15);
+        background-color: rgba($amber_color, 0.05);
       }
     }
 
     &.active {
       // margin: 0 16px;
       border-radius: 2px;
-      background-color: rgba($amber_color, 0.3);
+      background-color: rgba($amber_color, 0.05);
 
       a.nav-list-link {
         &.active {
