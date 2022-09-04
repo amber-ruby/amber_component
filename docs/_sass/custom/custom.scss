@@ -41,6 +41,24 @@ footer {
   .nav-list-item {
     a.nav-list-link {
       color: rgba(255, 255, 255, 0.8);
+
+      &.active{
+        color: $amber_color;
+        background-image: none;
+        background-color: rgba($amber_color, 0.15);
+      }
+
+      &:hover {
+        background-image: unset;
+        background-color: rgba($amber_color, 0.15);
+      }
+    }
+
+    a.nav-list-expander {
+      &:hover {
+        background-image: unset;
+        background-color: rgba($amber_color, 0.15);
+      }
     }
 
     &.active {

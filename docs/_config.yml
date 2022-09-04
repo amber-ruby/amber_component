@@ -104,9 +104,9 @@ footer_content: >-
   <script type="text/javascript">
     document.write(new Date().getFullYear());
   </script>
-  <a class="personal-link" href="{{ site.data.amber_component.garbus_beach_url }}">Garbus Beach</a>,
-  <a class="personal-link" href="{{ site.data.amber_component.mateusz_drewniak_url }}">Mateusz Drewniak</a>.
-  Made with ❤️ for ruby.
+  <a class="personal-link" href="https://garbusbeach.com">Garbus Beach</a>,
+  <a class="personal-link" href="https://mateuszdrewniak.it">Mateusz Drewniak</a>.
+  Made in Poland 🇵🇱 with ❤️ for ruby.
 
 # Footer last edited timestamp
 last_edit_timestamp: false # show or hide edit time - page must have `last_modified_date` defined in the frontmatter

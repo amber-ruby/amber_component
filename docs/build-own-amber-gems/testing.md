@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Testing
-nav_order: 5
-has_children: true
+parent: Build own Amber gems
+nav_order: 3
 ---
 
 # Testing
