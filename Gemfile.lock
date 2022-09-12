@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    amber_component (0.0.2)
+    amber_component (0.0.3)
       actionview (>= 6)
       activemodel (>= 6)
       activesupport (>= 6)
