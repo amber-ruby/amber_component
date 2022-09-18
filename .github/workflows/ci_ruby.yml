@@ -22,6 +22,9 @@ jobs:
     strategy:
       matrix:
         ruby-version: ['2.7', '3.0', '3.1']
+        include:
+          - ruby-version: '3.1'
+            coverage: true
     steps:
       - name: Configure Git
         run: |
@@ -36,18 +39,24 @@ jobs:
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Run the setup script
         run: ./bin/setup
-      - name: Run tests
-        run: COVERAGE=true bundle exec rake test
+      - name: Run unit tests
+        env:
+          COVERAGE: ${{ matrix.coverage }}
+        run: bundle exec rake test:unit
+      - name: Run integration tests
+        run: bundle exec rake test:integration
       - name: Code Coverage report
+        if: ${{ matrix.coverage }}
         uses: 5monkeys/cobertura-action@master
         with:
           path: coverage/coverage.xml
           minimum_coverage: 85
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           fail_below_threshold: 60
-          show_line: true
           show_missing: true
+          link_missing_lines: true
       - name: Prepare data for a Code Coverage badge
+        if: ${{ matrix.coverage }}
         run: |
           echo "COVERAGE=$(./bin/code_coverage)" >> $GITHUB_ENV
           REF=${{ github.ref }}
@@ -57,6 +66,7 @@ jobs:
           echo $BRANCH_NAME
           echo "BRANCH=${BRANCH_NAME}" >> $GITHUB_ENV
       - name: Create the Coverage Badge
+        if: ${{ matrix.coverage }}
         uses: schneegans/dynamic-badges-action@v1.4.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
@@ -71,6 +81,7 @@ jobs:
           maxColorRange: 100
           minColorRange: 0
       - name: Archive code coverage artifacts
+        if: ${{ matrix.coverage }}
         uses: actions/upload-artifact@v3
         with:
           name: code_coverage
