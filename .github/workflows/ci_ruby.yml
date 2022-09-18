@@ -42,8 +42,11 @@ jobs:
         uses: 5monkeys/cobertura-action@master
         with:
           path: coverage/coverage.xml
-          minimum_coverage: 75
+          minimum_coverage: 85
           repo_token: ${{ secrets.GITHUB_TOKEN }}
+          fail_below_threshold: 60
+          show_line: true
+          show_missing: true
       - name: Prepare data for a Code Coverage badge
         run: |
           echo "COVERAGE=$(./bin/code_coverage)" >> $GITHUB_ENV
