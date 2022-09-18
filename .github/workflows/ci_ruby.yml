@@ -50,9 +50,9 @@ jobs:
         uses: 5monkeys/cobertura-action@master
         with:
           path: coverage/coverage.xml
-          minimum_coverage: 85
+          minimum_coverage: 90
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          fail_below_threshold: 70
+          fail_below_threshold: true
           show_missing: true
           link_missing_lines: true
       - name: Prepare data for a Code Coverage badge
