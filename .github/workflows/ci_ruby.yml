@@ -52,7 +52,7 @@ jobs:
           path: coverage/coverage.xml
           minimum_coverage: 85
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          fail_below_threshold: 60
+          fail_below_threshold: 70
           show_missing: true
           link_missing_lines: true
       - name: Prepare data for a Code Coverage badge
