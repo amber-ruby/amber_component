@@ -48,6 +48,8 @@ module ::AmberComponent
     extend  Assets::ClassMethods
     include Rendering::InstanceMethods
     extend  Rendering::ClassMethods
+    include Props::InstanceMethods
+    extend  Props::ClassMethods
 
     class << self
       include ::Memery
@@ -119,9 +121,12 @@ module ::AmberComponent
     define_model_callbacks :initialize, :render
 
     # @param kwargs [Hash{Symbol => Object}]
+    # @raise [AmberComponent::MissingPropsError] when required props are missing
     def initialize(**kwargs)
       run_callbacks :initialize do
-        bind_variables(kwargs)
+        next if bind_props(kwargs)
+
+        bind_instance_variables(kwargs)
       end
     end
 
@@ -129,7 +134,7 @@ module ::AmberComponent
 
     # @param kwargs [Hash{Symbol => Object}]
     # @return [void]
-    def bind_variables(kwargs)
+    def bind_instance_variables(kwargs)
       kwargs.each do |key, value|
         instance_variable_set("@#{key}", value)
       end

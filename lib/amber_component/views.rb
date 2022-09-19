@@ -55,7 +55,7 @@ module ::AmberComponent
       # @return [String, nil]
       def view_file_name
         files = asset_file_names(VIEW_FILE_REGEXP)
-        raise MultipleViews, "More than one view file for `#{name}` found!" if files.length > 1
+        raise MultipleViewsError, "More than one view file for `#{name}` found!" if files.length > 1
 
         files.first
       end
@@ -81,7 +81,7 @@ module ::AmberComponent
         view_content = view_from_inline unless view_from_inline.empty?
 
         if view_content.nil? || view_content.empty?
-          raise ViewFileNotFound, "View for `#{self.class}` could not be found!"
+          raise ViewFileNotFoundError, "View for `#{self.class}` could not be found!"
         end
 
         view_content
@@ -108,13 +108,13 @@ module ::AmberComponent
         content = content.to_s
 
         if content.empty?
-          raise EmptyView, <<~ERR.squish
+          raise EmptyViewError, <<~ERR.squish
             Custom view for `#{self.class}` from view method cannot be empty!
           ERR
         end
 
         unless ALLOWED_VIEW_TYPES.include? type
-          raise UnknownViewType, <<~ERR.squish
+          raise UnknownViewTypeError, <<~ERR.squish
             Unknown view type for `#{self.class}` from view method!
             Check return value of param type in `view :[type] do`
           ERR

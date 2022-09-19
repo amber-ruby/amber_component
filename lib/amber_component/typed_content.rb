@@ -10,7 +10,7 @@ module ::AmberComponent
         return val if val.is_a?(self)
 
         unless val.respond_to?(:[])
-          raise InvalidType, "`TypedContent` should be a `Hash` or `#{self}` but was `#{val.class}` (#{val.inspect})"
+          raise InvalidTypeError, "`TypedContent` should be a `Hash` or `#{self}` but was `#{val.class}` (#{val.inspect})"
         end
 
         new(type: val[:type], content: val[:content])
