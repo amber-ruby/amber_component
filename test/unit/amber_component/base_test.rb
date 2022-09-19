@@ -28,9 +28,6 @@ module ::AmberComponent
             <div class="content">
               <%= @content %>
             </div>
-            <%= Some::Namespaced.AwesomeComponent name: "CamelCased" do %>
-              <b>nested inside Namespaced component with CamelCased method</b>
-            <% end %>
             <%= Some::Namespaced.awesome_component name: "snake_cased" do %>
               <b>nested inside Namespaced component with snake_cased method</b>
             <% end %>
@@ -43,7 +40,6 @@ module ::AmberComponent
       view do
         <<~HTML
           <div class="outer">
-            <%= InnerComponent content: 'CamelCased!' %>
             <%= inner_component content: 'snake_cased!' %>
           </div>
         HTML
@@ -58,39 +54,8 @@ module ::AmberComponent
             <div class="inner">
             <h1>I'm the inner component!</h1>
             <div class="content">
-              CamelCased!
-            </div>
-            
-              <b>nested inside Namespaced component with CamelCased method</b>
-          <h2>Some::Namespaced::AwesomeComponent CamelCased</h2>
-          <div class="namespaced">
-            
-              <b>nested inside Namespaced component with CamelCased method</b>
-
-          </div>
-            
-              <b>nested inside Namespaced component with snake_cased method</b>
-          <h2>Some::Namespaced::AwesomeComponent snake_cased</h2>
-          <div class="namespaced">
-            
-              <b>nested inside Namespaced component with snake_cased method</b>
-
-          </div>
-          </div>
-
-            <div class="inner">
-            <h1>I'm the inner component!</h1>
-            <div class="content">
               snake_cased!
             </div>
-            
-              <b>nested inside Namespaced component with CamelCased method</b>
-          <h2>Some::Namespaced::AwesomeComponent CamelCased</h2>
-          <div class="namespaced">
-            
-              <b>nested inside Namespaced component with CamelCased method</b>
-
-          </div>
             
               <b>nested inside Namespaced component with snake_cased method</b>
           <h2>Some::Namespaced::AwesomeComponent snake_cased</h2>
