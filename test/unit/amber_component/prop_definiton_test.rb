@@ -3,10 +3,10 @@
 require 'test_helper'
 
 module ::AmberComponent
-  class PropTest < ::TestCase
+  class PropDefinitionTest < ::TestCase
 
     should 'have appropriate default options' do
-      prop = Prop.new(name: :something)
+      prop = PropDefinition.new(name: :something)
       assert_equal :something, prop.name
       assert_nil prop.type
       assert_equal false, prop.required
@@ -14,7 +14,7 @@ module ::AmberComponent
     end
 
     should 'evaluate default! when it is a Proc' do
-      prop = Prop.new(name: :something, default: -> { [] })
+      prop = PropDefinition.new(name: :something, default: -> { [] })
       assert_equal :something, prop.name
       assert prop.default.is_a?(::Proc)
       assert_equal [], prop.default!
@@ -22,7 +22,7 @@ module ::AmberComponent
     end
 
     should 'not evaluate default! when it is not a Proc' do
-      prop = Prop.new(name: :something, default: [])
+      prop = PropDefinition.new(name: :something, default: [])
       assert_equal :something, prop.name
       assert !prop.default.is_a?(::Proc)
       assert_equal [], prop.default
@@ -32,7 +32,7 @@ module ::AmberComponent
     end
 
     should 'save all args' do
-      prop = Prop.new(name: :nam, type: ::String, required: true, default: :def)
+      prop = PropDefinition.new(name: :nam, type: ::String, required: true, default: :def)
       assert_equal :nam, prop.name
       assert_equal ::String, prop.type
       assert prop.required

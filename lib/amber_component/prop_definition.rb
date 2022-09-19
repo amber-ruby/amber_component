@@ -3,7 +3,7 @@
 module ::AmberComponent
   # Internal class which represents a property
   # on a component class.
-  class Prop
+  class PropDefinition
     # @return [Symbol]
     attr_reader :name
     # @return [Class, nil]
@@ -22,6 +22,18 @@ module ::AmberComponent
       @type = type
       @required = required
       @default = default
+    end
+
+    alias required? required
+
+    # @return [Boolean]
+    def type?
+      !@type.nil?
+    end
+
+    # @return [Boolean]
+    def default?
+      !@default.nil?
     end
 
     # Evaluate the default value if it's a `Proc`

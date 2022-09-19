@@ -20,6 +20,11 @@ module ::AmberComponent
       end
     end
 
+    should "return information about its props" do
+      assert_equal %i[amount currencies address phone], TestClass.prop_names
+      assert_equal %i[amount], TestClass.required_prop_names
+    end
+
     context 'initializer' do
       should 'raise an error when a required prop is not present' do
         assert_raises MissingPropsError do
