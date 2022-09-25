@@ -13,7 +13,7 @@ gem 'git'
 gem 'haml'
 gem 'rubocop', '~> 1.21'
 gem 'sassc'
-gem 'solargraph', '~> 0.45.0'
+gem 'solargraph'
 gem 'yard'
 
 # Testing dependencies
