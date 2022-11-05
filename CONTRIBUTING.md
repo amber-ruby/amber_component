@@ -72,9 +72,9 @@ $ gem install ffi -- --with-cflags="-fdeclspec"
 
 > Gem::Ext::BuildError: ERROR: Failed to build gem native extension.
 >
->    current directory: /Users/mateuszdrewniak/.rvm/gems/ruby-3.1.0@dupa/gems/puma-5.6.2/ext/puma_http11
+>    current directory: ~/.rvm/gems/ruby-3.1.0@dupa/gems/puma-5.6.2/ext/puma_http11
 >
-> /Users/mateuszdrewniak/.rvm/rubies/ruby-3.1.0/bin/ruby -I /Users/mateuszdrewniak/.rvm/rubies/ruby-3.1.0/lib/ruby/3.1.0 -r ./siteconf20220219-40641-4uxhq6.rb extconf.rb --with-cflags\=-Wno-error\=implicit-function-declaration
+> ~/.rvm/rubies/ruby-3.1.0/bin/ruby -I ~/.rvm/rubies/ruby-3.1.0/lib/ruby/3.1.0 -r ./siteconf20220219-40641-4uxhq6.rb extconf.rb --with-cflags\=-Wno-error\=implicit-function-declaration
 >
 > checking for BIO_read() in -lcrypto... *** extconf.rb failed ***
 >
