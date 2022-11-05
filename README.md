@@ -15,7 +15,7 @@ Created by [Garbus Beach](https://github.com/garbusbeach) and [Mateusz Drewniak]
 
 ## Getting started
 
-You can read a lot more about AmberComponent in its [official docs](https://ambercomponent.com). 
+You can read a lot more about AmberComponent in its [official docs](https://ambercomponent.com).
 
 ## Installation
 
