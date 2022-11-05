@@ -9,9 +9,9 @@ module ::AmberComponent
       def wrap(val)
         return val if val.is_a?(self)
 
-        unless val.respond_to?(:[])
-          raise InvalidType, "`TypedContent` should be a `Hash` or `#{self}` but was `#{val.class}` (#{val.inspect})"
-        end
+        raise InvalidTypeError, <<~MSG unless val.respond_to?(:[])
+          `TypedContent` should be a `Hash` or `#{self}` but was `#{val.class}` (#{val.inspect})
+        MSG
 
         new(type: val[:type], content: val[:content])
       end

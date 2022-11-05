@@ -8,7 +8,16 @@ module ::AmberComponent
       # @return [String]
       def asset_dir_path
         component_file_path, = source_location
+        return asset_dir_from_name unless component_file_path
+
         component_file_path.delete_suffix('.rb')
+      end
+
+      # @return [String, nil]
+      def asset_dir_from_name
+        return unless defined?(::Rails)
+
+        ::Rails.root / 'app' / 'components' / name.underscore
       end
 
       # Get an array of all folders containing component assets.

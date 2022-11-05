@@ -42,7 +42,7 @@ module Integration
     should 'install and uninstall the gem' do
       assert rails "g #{INSTALL_GENERATOR}"
       @git.add
-      assert_equal 3, @git.diff.entries.size
+      assert_equal 2, @git.diff.entries.size
 
       diff = file_diff component_path('application_component.rb')
       assert_equal 'new', diff.type
@@ -68,23 +68,20 @@ module Integration
         + *= require_tree ./../../components
       PATCH
 
-      diff = file_diff 'config/initializers/assets.rb'
-      assert_equal 'modified', diff.type
-      assert diff.patch.include?(<<~PATCH.chomp)
-        +::Rails.application.config.assets.paths << ::File.join(::Rails.root, 'app', 'components')
-      PATCH
-
       assert rails "d #{INSTALL_GENERATOR}"
       @git.add
       assert_equal 0, @git.diff.entries.size
     end
 
     should 'generate and destroy a new component' do
+      assert rails "g #{INSTALL_GENERATOR}"
+      @git.add
+      assert_equal 2, @git.diff.entries.size
       %w[some some_component Some SomeComponent].each do |passed_name|
         # with snake_cased name
         assert rails "g #{COMPONENT_GENERATOR} #{passed_name}"
         @git.add
-        assert_equal 4, @git.diff.entries.size
+        assert_equal 6, @git.diff.entries.size
 
         diff = file_diff component_path('some_component.rb')
         assert_equal 'new', diff.type
@@ -132,16 +129,20 @@ module Integration
 
         assert rails "d #{COMPONENT_GENERATOR} #{passed_name}"
         @git.add
-        assert_equal 0, @git.diff.entries.size
+        assert_equal 2, @git.diff.entries.size
       end
+      assert rails "d #{INSTALL_GENERATOR}"
     end
 
     should 'generate and destroy a new namespaced component' do
+      assert rails "g #{INSTALL_GENERATOR}"
+      @git.add
+      assert_equal 2, @git.diff.entries.size
       %w[some/awesome/wonderful some/awesome/wonderful_component Some::Awesome::Wonderful Some::Awesome::WonderfulComponent].each do |passed_name|
         # with snake_cased name
         assert rails "g #{COMPONENT_GENERATOR} #{passed_name}"
         @git.add
-        assert_equal 4, @git.diff.entries.size
+        assert_equal 6, @git.diff.entries.size
 
         diff = file_diff component_path('some', 'awesome', 'wonderful_component.rb')
         assert_equal 'new', diff.type
@@ -189,8 +190,9 @@ module Integration
 
         assert rails "d #{COMPONENT_GENERATOR} #{passed_name}"
         @git.add
-        assert_equal 0, @git.diff.entries.size
+        assert_equal 2, @git.diff.entries.size
       end
+      assert rails "d #{INSTALL_GENERATOR}"
     end
 
     private

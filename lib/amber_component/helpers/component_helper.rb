@@ -7,6 +7,7 @@ module ::AmberComponent
     # Contains methods for quickly rendering
     # components defined under the root namespace `Object`.
     module ComponentHelper
+      @__amber_component_helper_module = self
     end
   end
 end
