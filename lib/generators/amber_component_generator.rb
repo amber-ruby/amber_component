@@ -31,7 +31,7 @@ class AmberComponentGenerator < ::Rails::Generators::NamedBase
       return
     end
 
-    unless STYLE_FORMATS.include? @style_format
+    if !@style_format.nil? && STYLE_FORMATS.include?(@style_format)
       puts "No such css/style format as `#{@style_format}`"
       return
     end

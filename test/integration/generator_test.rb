@@ -89,9 +89,11 @@ module Integration
           +# frozen_string_literal: true
           +
           +class SomeComponent < ::ApplicationComponent
-          +  # Your code goes here
+          +  # Props that your component accepts
+          +  prop :description, default: -> { 'Default Description' }
           +
           +  after_initialize do
+          +    # some initialization
           +    @time = ::Time.now
           +  end
           +end
@@ -100,15 +102,20 @@ module Integration
         diff = file_diff component_path('some_component', 'view.html.erb')
         assert_equal 'new', diff.type
         assert diff.patch.end_with?(<<~PATCH.chomp)
-          +<h2 class='some_component'>
-          +  Hello from <b>SomeComponent</b>, initialized at: <%= @time %>
-          +</h2>
+          +<div class='some_component'>
+          +  <h1>
+          +    Hello from <b>SomeComponent</b>, initialized at: <%= @time %>
+          +  </h1>
+          +  <p>
+          +    <%= description %>
+          +  </p>
+          +</div>
         PATCH
 
         diff = file_diff component_path('some_component', 'style.css')
         assert_equal 'new', diff.type
         assert diff.patch.end_with?(<<~PATCH.chomp)
-          +.some_component {
+          +.some_component h1 {
           +  color: blue;
           +}
         PATCH
@@ -121,8 +128,10 @@ module Integration
           +require 'test_helper'
           +
           +class SomeComponentTest < ::ActiveSupport::TestCase
-          +  # test 'the truth' do
-          +  #   assert true
+          +  # test 'returns correct html' do
+          +  #  assert_equal <<~HTML, SomeComponent.call
+          +  #    <div>Some HTML!</div>
+          +  #  HTML
           +  # end
           +end
         PATCH
@@ -150,9 +159,11 @@ module Integration
           +# frozen_string_literal: true
           +
           +class Some::Awesome::WonderfulComponent < ::ApplicationComponent
-          +  # Your code goes here
+          +  # Props that your component accepts
+          +  prop :description, default: -> { 'Default Description' }
           +
           +  after_initialize do
+          +    # some initialization
           +    @time = ::Time.now
           +  end
           +end
@@ -161,15 +172,20 @@ module Integration
         diff = file_diff component_path('some', 'awesome', 'wonderful_component', 'view.html.erb')
         assert_equal 'new', diff.type
         assert diff.patch.end_with?(<<~PATCH.chomp)
-          +<h2 class='some_awesome_wonderful_component'>
-          +  Hello from <b>Some::Awesome::WonderfulComponent</b>, initialized at: <%= @time %>
-          +</h2>
+          +<div class='some_awesome_wonderful_component'>
+          +  <h1>
+          +    Hello from <b>Some::Awesome::WonderfulComponent</b>, initialized at: <%= @time %>
+          +  </h1>
+          +  <p>
+          +    <%= description %>
+          +  </p>
+          +</div>
         PATCH
 
         diff = file_diff component_path('some', 'awesome', 'wonderful_component', 'style.css')
         assert_equal 'new', diff.type
         assert diff.patch.end_with?(<<~PATCH.chomp)
-          +.some_awesome_wonderful_component {
+          +.some_awesome_wonderful_component h1 {
           +  color: blue;
           +}
         PATCH
@@ -182,8 +198,10 @@ module Integration
           +require 'test_helper'
           +
           +class Some::Awesome::WonderfulComponentTest < ::ActiveSupport::TestCase
-          +  # test 'the truth' do
-          +  #   assert true
+          +  # test 'returns correct html' do
+          +  #  assert_equal <<~HTML, Some::Awesome::WonderfulComponent.call
+          +  #    <div>Some HTML!</div>
+          +  #  HTML
           +  # end
           +end
         PATCH
