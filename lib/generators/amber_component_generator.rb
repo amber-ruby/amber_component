@@ -11,8 +11,12 @@ class AmberComponentGenerator < ::Rails::Generators::NamedBase
   def copy_tasks
     template 'component.rb.erb', "app/components/#{file_path}.rb"
     template 'component_test.rb.erb', "test/components/#{file_path}_test.rb"
-    template 'view.html.erb', "app/components/#{file_path}/view.html.erb"
-    template 'style.css.erb', "app/components/#{file_path}/style.css"
+    template 'view.html.erb.erb', "app/components/#{file_path}/view.html.erb"
+    if defined?(::SassC)
+      template 'style.scss.erb', "app/components/#{file_path}/style.scss"
+    else
+      template 'style.css.erb', "app/components/#{file_path}/style.css"
+    end
   end
 
   def file_name
