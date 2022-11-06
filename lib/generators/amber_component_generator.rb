@@ -8,17 +8,32 @@ class AmberComponentGenerator < ::Rails::Generators::NamedBase
   source_root ::File.expand_path('templates', __dir__)
 
   # @return [Array<Symbol>]
-  VIEW_FORMATS = %i[html erb haml slim]
+  VIEW_FORMATS = %i[html erb haml slim].freeze
+  # @return [Array<Symbol>]
+  STYLE_FORMATS = %i[css scss sass].freeze
 
-  class_option view: :string
-  # copy rake tasks
-  def copy_tasks
+  class_option :view,
+               aliases: ['-v'],
+               desc: "Indicate what type of view should be generated eg. #{VIEW_FORMATS}"
+
+  class_option :css,
+               aliases: ['--style', '-c'],
+               desc: "Indicate what type of styles should be generated eg. #{STYLE_FORMATS}"
+
+  def generate_component
     @view_format = (options[:view] || :html).to_sym
     @view_format = :html if @view_format == :erb
 
+    @style_format = options[:css]&.to_sym
+
     unless VIEW_FORMATS.include? @view_format
       puts "No such view format as `#{@view_format}`"
-      error!
+      return
+    end
+
+    unless STYLE_FORMATS.include? @style_format
+      puts "No such css/style format as `#{@style_format}`"
+      return
     end
 
     template 'component.rb.erb', "app/components/#{file_path}.rb"
@@ -50,8 +65,10 @@ class AmberComponentGenerator < ::Rails::Generators::NamedBase
 
   # @return [void]
   def create_stylesheet
-    if defined?(::SassC)
+    if (@style_format.nil? && defined?(::SassC)) || @style_format == :scss
       template 'style.scss.erb', "app/components/#{file_path}/style.scss"
+    elsif @style_format == :sass
+      template 'style.sass.erb', "app/components/#{file_path}/style.sass"
     else
       template 'style.css.erb', "app/components/#{file_path}/style.css"
     end
