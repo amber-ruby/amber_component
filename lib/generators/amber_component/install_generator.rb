@@ -14,10 +14,27 @@ module ::AmberComponent
       def copy_tasks
         copy_file 'application_component.rb', 'app/components/application_component.rb'
 
-        inject_into_file 'app/assets/stylesheets/application.css', after: "*= require_tree .\n" do
+        require_components_css_in 'app/assets/stylesheets/application.css'
+        require_components_css_in 'app/assets/stylesheets/application.scss'
+        require_components_css_in 'app/assets/stylesheets/application.sass'
+        require_components_css_in 'app/assets/stylesheets/application.css.scss'
+        require_components_css_in 'app/assets/stylesheets/application.css.sass'
+        require_components_css_in 'app/assets/stylesheets/application.scss.sass'
+        require_components_css_in 'app/assets/stylesheets/application.sass.scss'
+      end
+
+      private
+
+      # @param file_name [String]
+      # @return [void]
+      def require_components_css_in(file_name)
+        return unless ::File.exist? file_name
+
+        inject_into_file file_name, after: "*= require_tree .\n" do
           " *= require_tree ./../../components\n"
         end
       end
+
     end
   end
 end
