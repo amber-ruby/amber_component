@@ -244,7 +244,7 @@ end
 It's possible to nest components or provide
 custom HTML to a component.
 
-This works similarly to React's `props.children`
+This works similarly to React's `props.children`.
 
 To render the passed nested content call `yield.html_safe` somewhere inside the template/view.
 

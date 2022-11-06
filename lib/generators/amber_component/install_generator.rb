@@ -13,6 +13,8 @@ module ::AmberComponent
       # copy rake tasks
       def copy_tasks
         copy_file 'application_component.rb', 'app/components/application_component.rb'
+        copy_file 'application_component_test_case.rb', 'test/application_component_test_case.rb'
+        append_file 'test/test_helper.rb', "require_relative 'application_component_test_case'"
 
         require_components_css_in 'app/assets/stylesheets/application.css'
         require_components_css_in 'app/assets/stylesheets/application.scss'

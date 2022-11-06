@@ -42,7 +42,7 @@ module Integration
     should 'install and uninstall the gem' do
       assert rails "g #{INSTALL_GENERATOR}"
       @git.add
-      assert_equal 2, @git.diff.entries.size
+      assert_equal 4, @git.diff.entries.size
 
       diff = file_diff component_path('application_component.rb')
       assert_equal 'new', diff.type
@@ -68,6 +68,24 @@ module Integration
         + *= require_tree ./../../components
       PATCH
 
+      diff = file_diff 'test/application_component_test_case.rb'
+      assert_equal 'new', diff.type
+      assert diff.patch.include?(<<~PATCH.chomp)
+        +# frozen_string_literal: true
+        +
+        +require 'amber_component/test_helper'
+        +
+        +class ApplicationComponentTestCase < ::ActiveSupport::TestCase
+        +  include ::AmberComponent::TestHelper
+        +end
+      PATCH
+
+      diff = file_diff 'test/test_helper.rb'
+      assert_equal 'modified', diff.type
+      assert diff.patch.include?(<<~PATCH.chomp)
+        +require_relative 'application_component_test_case'
+      PATCH
+
       assert rails "d #{INSTALL_GENERATOR}"
       @git.add
       assert_equal 0, @git.diff.entries.size
@@ -76,12 +94,12 @@ module Integration
     should 'generate and destroy a new component' do
       assert rails "g #{INSTALL_GENERATOR}"
       @git.add
-      assert_equal 2, @git.diff.entries.size
+      assert_equal 4, @git.diff.entries.size
       %w[some some_component Some SomeComponent].each do |passed_name|
         # with snake_cased name
         assert rails "g #{COMPONENT_GENERATOR} #{passed_name}"
         @git.add
-        assert_equal 6, @git.diff.entries.size
+        assert_equal 8, @git.diff.entries.size
 
         diff = file_diff component_path('some_component.rb')
         assert_equal 'new', diff.type
@@ -127,18 +145,24 @@ module Integration
           +
           +require 'test_helper'
           +
-          +class SomeComponentTest < ::ActiveSupport::TestCase
+          +class SomeComponentTest < ::ApplicationComponentTestCase
+          +  # For a full list of available assertions see
+          +  # https://rubydoc.info/github/jnicklas/capybara/Capybara/Node/Matchers
+          +
           +  # test 'returns correct html' do
-          +  #  assert_equal <<~HTML, SomeComponent.call
-          +  #    <div>Some HTML!</div>
-          +  #  HTML
+          +  #   render do
+          +  #     SomeComponent.call
+          +  #   end
+          +
+          +  #   assert_text 'Hello from SomeComponent'
+          +  #   assert_selector "div.some_component p", text: 'Default Description'
           +  # end
           +end
         PATCH
 
         assert rails "d #{COMPONENT_GENERATOR} #{passed_name}"
         @git.add
-        assert_equal 2, @git.diff.entries.size
+        assert_equal 4, @git.diff.entries.size
       end
       assert rails "d #{INSTALL_GENERATOR}"
     end
@@ -146,12 +170,12 @@ module Integration
     should 'generate and destroy a new namespaced component' do
       assert rails "g #{INSTALL_GENERATOR}"
       @git.add
-      assert_equal 2, @git.diff.entries.size
+      assert_equal 4, @git.diff.entries.size
       %w[some/awesome/wonderful some/awesome/wonderful_component Some::Awesome::Wonderful Some::Awesome::WonderfulComponent].each do |passed_name|
         # with snake_cased name
         assert rails "g #{COMPONENT_GENERATOR} #{passed_name}"
         @git.add
-        assert_equal 6, @git.diff.entries.size
+        assert_equal 8, @git.diff.entries.size
 
         diff = file_diff component_path('some', 'awesome', 'wonderful_component.rb')
         assert_equal 'new', diff.type
@@ -197,18 +221,24 @@ module Integration
           +
           +require 'test_helper'
           +
-          +class Some::Awesome::WonderfulComponentTest < ::ActiveSupport::TestCase
+          +class Some::Awesome::WonderfulComponentTest < ::ApplicationComponentTestCase
+          +  # For a full list of available assertions see
+          +  # https://rubydoc.info/github/jnicklas/capybara/Capybara/Node/Matchers
+          +
           +  # test 'returns correct html' do
-          +  #  assert_equal <<~HTML, Some::Awesome::WonderfulComponent.call
-          +  #    <div>Some HTML!</div>
-          +  #  HTML
+          +  #   render do
+          +  #     Some::Awesome::WonderfulComponent.call
+          +  #   end
+          +
+          +  #   assert_text 'Hello from Some::Awesome::WonderfulComponent'
+          +  #   assert_selector "div.some_awesome_wonderful_component p", text: 'Default Description'
           +  # end
           +end
         PATCH
 
         assert rails "d #{COMPONENT_GENERATOR} #{passed_name}"
         @git.add
-        assert_equal 2, @git.diff.entries.size
+        assert_equal 4, @git.diff.entries.size
       end
       assert rails "d #{INSTALL_GENERATOR}"
     end
