@@ -244,6 +244,8 @@ end
 It's possible to nest components or provide
 custom HTML to a component.
 
+This works similarly to React's `props.children`
+
 To render the passed nested content call `yield.html_safe` somewhere inside the template/view.
 
 ```ruby
@@ -300,7 +302,7 @@ In general `block_given?` will return `true` when a block/nested content is pres
 
 ### Components with namespaces
 
-Components may be defined inside modules/namespaces.
+Components may be defined inside multiple modules/namespaces.
 
 ```ruby
 # app/components/sign_up/button_component.rb
@@ -313,7 +315,7 @@ end
 ```html
 <!-- app/components/sign_up/button_component/view.html.erb -->
 
-<div class="sign_up-button_component">
+<div class="sign_up_button_component">
     <%= label %>
 </div>
 ```
@@ -321,7 +323,7 @@ end
 ```scss
 // app/components/sign_up/button_component/style.scss
 
-.sign_up-button_component {
+.sign_up_button_component {
     background-color: indigo;
     border-radius: 1rem;
     transition-duration: 500ms;
@@ -330,6 +332,14 @@ end
         background-color: blue;
     }
 }
+```
+
+You can render such a component by calling the `::call` method
+on its class, or by using the helper method defined on its parent module.
+
+```ruby
+SignUp::ButtonComponent.call label: 'Sign up!'
+SignUp.button_component label: 'Sign up!'
 ```
 
 ### Generating Components
