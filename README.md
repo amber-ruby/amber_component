@@ -358,6 +358,77 @@ $ bin/rails generate component FooBar
 
 This will generate a new component in `app/components/foo_bar_component.rb` along with a view, stylesheet and test file.
 
+### Testing Components
+
+### Rails
+
+After setting up this gem with the rails generator
+`rails generate amber_component:install` a new abstract
+test class will be available called `ApplicationComponentTestCase`.
+
+It provides a handful of helper methods to make it
+easier to inspect the rendered HTML.
+
+A simple test file may look like this:
+
+```ruby
+# test/components/foo_component_test.rb
+
+require 'test_helper'
+
+class FooComponentTest < ApplicationComponentTestCase
+    test 'render correct HTML' do
+        render do
+            FooComponent.call
+        end
+
+        assert_selector ".foo_component span.my_class", text: 'Some Text'
+        assert_text 'Amber Component is awesome!'
+    end
+end
+```
+
+A full list of available assertions is available [here](https://rubydoc.info/github/jnicklas/capybara/Capybara/Node/Matchers).
+
+### Non Rails
+
+There is a test case class for minitest. You can
+access it by requiring `'amber_component/minitest_test_case'`.
+
+It has the same assertion methods as the Rails test case class.
+It requires [capybara](https://github.com/teamcapybara/capybara) to be installed and present in the Gemfile.
+
+A full list of available assertions is available [here](https://rubydoc.info/github/jnicklas/capybara/Capybara/Node/Matchers).
+
+```ruby
+require 'amber_component/minitest_test_case'
+
+class FooComponentTest < AmberComponent::MinitestTestCase
+    def test_render_correct_html
+        render do
+            FooComponent.call
+        end
+
+        assert_selector ".foo_component span.my_class", text: 'Some Text'
+        assert_text 'Amber Component is awesome!'
+    end
+end
+```
+
+There is also a helper module which provides all of these assertions
+under `'amber_component/test_helper'`.
+
+```ruby
+require 'amber_component/test_helper'
+
+class MyAbstractTestCase < ::Minitest::Test
+    include ::AmberComponent::TestHelper
+end
+```
+
+Note that this module has only been tested with minitest and rails test suites,
+so it may require overriding or implementing a few methods for other suites.
+
 ## Contribute
 
 Do you want to contribute to AmberComponent? Open the issues page and check for the help wanted label! But before you start coding, please read our [Contributing Guide](https://github.com/amber-ruby/amber_component/blob/main/CONTRIBUTING.md).
