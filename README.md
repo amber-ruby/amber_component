@@ -283,12 +283,14 @@ a block.
 <!-- app/controller/tasks/show.html.erb -->
 
 <%= ModalComponent.call id: 'update-task-modal' title: 'Update the task' do %>
+    <!-- You can provide HTML and render other components -->
     <h2>This is your task!</h2>
     <%= form_with model: @task do |f| %>
         <%= f.text_field :name %>
         <%= f.text_area :description %>
         <%= f.submit %>
     <% end %>
+    <%= OtherComponent.call some: 'prop' %>
 <% end %>
 ```
 
@@ -299,6 +301,8 @@ only when it is present (will work without nested content)
 you can use `yield.html_safe if block_given?`
 
 In general `block_given?` will return `true` when a block/nested content is present, otherwise `false`.
+You can use it to render content conditionally based on
+whether nested content is present.
 
 ### Components with namespaces
 
@@ -378,17 +382,28 @@ require 'test_helper'
 
 class FooComponentTest < ApplicationComponentTestCase
     test 'render correct HTML' do
+        # Specify what the assertions are supposed to
+        # check against.
+        #
+        # There can be multiple renders in one test
+        # but they override the previous one.
+        # So there is only one rendered component
+        # at any given time.
         render do
-            FooComponent.call
+            FooComponent.call some: 'prop'
         end
 
+        # Assertions on the rendered HTML
+
+        # Use a CSS selector
         assert_selector ".foo_component span.my_class", text: 'Some Text'
+        # Check text
         assert_text 'Amber Component is awesome!'
     end
 end
 ```
 
-A full list of available assertions is available [here](https://rubydoc.info/github/jnicklas/capybara/Capybara/Node/Matchers).
+A full list of available assertions can be found [here](https://rubydoc.info/github/jnicklas/capybara/Capybara/Node/Matchers).
 
 ### Non Rails
 
@@ -398,18 +413,29 @@ access it by requiring `'amber_component/minitest_test_case'`.
 It has the same assertion methods as the Rails test case class.
 It requires [capybara](https://github.com/teamcapybara/capybara) to be installed and present in the Gemfile.
 
-A full list of available assertions is available [here](https://rubydoc.info/github/jnicklas/capybara/Capybara/Node/Matchers).
+A full list of available assertions can be found [here](https://rubydoc.info/github/jnicklas/capybara/Capybara/Node/Matchers).
 
 ```ruby
 require 'amber_component/minitest_test_case'
 
 class FooComponentTest < AmberComponent::MinitestTestCase
     def test_render_correct_html
+        # Specify what the assertions are supposed to
+        # check against.
+        #
+        # There can be multiple renders in one test
+        # but they override the previous one.
+        # So there is only one rendered component
+        # at any given time.
         render do
-            FooComponent.call
+            FooComponent.call some: 'prop'
         end
 
+        # Assertions on the rendered HTML
+
+        # Use a CSS selector
         assert_selector ".foo_component span.my_class", text: 'Some Text'
+        # Check text
         assert_text 'Amber Component is awesome!'
     end
 end
@@ -427,7 +453,7 @@ end
 ```
 
 Note that this module has only been tested with minitest and rails test suites,
-so it may require overriding or implementing a few methods for other suites.
+so it may require overriding or implementing a few methods to work with other test suites.
 
 ## Contribute
 
