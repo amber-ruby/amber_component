@@ -75,7 +75,7 @@ module ::AmberComponent
     module InstanceMethods
       private
 
-      # @param props [Hash{Symbol => Object}]
+      # @param kwargs [Hash{Symbol => Object}]
       def initialize(**kwargs)
         bind_props(kwargs)
       end
