@@ -40,8 +40,10 @@ class AmberComponentGenerator < ::Rails::Generators::NamedBase
     template 'component_test.rb.erb', "test/components/#{file_path}_test.rb"
     create_stylesheet
     create_view
+    create_stimulus_controller
   end
 
+  # @return [String]
   def file_name
     name = super
     return name if name.end_with? '_component'
@@ -50,6 +52,18 @@ class AmberComponentGenerator < ::Rails::Generators::NamedBase
   end
 
   private
+
+  # @return [Boolean]
+  def stimulus?
+    ::AmberComponent.configuration.stimulus?
+  end
+
+  # @return [void]
+  def create_stimulus_controller
+    return unless stimulus?
+
+    template 'controller.js.erb', "app/components/#{file_path}/controller.js"
+  end
 
   # @return [void]
   def create_view
@@ -72,5 +86,10 @@ class AmberComponentGenerator < ::Rails::Generators::NamedBase
     else
       template 'style.css.erb', "app/components/#{file_path}/style.css"
     end
+  end
+
+  # @return [String]
+  def stimulus_controller_id
+    file_path.gsub('_', '-').gsub('/', '--')
   end
 end

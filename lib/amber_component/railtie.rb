@@ -4,8 +4,10 @@ module ::AmberComponent
   # Class which hooks into Rails
   # and configures the application.
   class Railtie < ::Rails::Railtie
-    initializer 'amber_component.initialization' do |app|
+    initializer 'amber_component.assets' do |app|
       app.config.assets.paths << (app.root / 'app' / 'components')
+      app.config.assets.paths << (ROOT_GEM_PATH / 'assets' / 'javascripts')
+      app.config.assets.precompile += %w[amber_component/stimulus_loading.js]
 
       next if ::Rails.env.production?
 

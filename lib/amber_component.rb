@@ -2,7 +2,11 @@
 
 require 'active_support'
 require 'active_support/core_ext'
+require 'pathname'
 
+require_relative 'amber_component/configuration'
+
+# Root module of the `amber_component` gem.
 module ::AmberComponent
   class Error < ::StandardError; end
   class MissingPropsError < Error; end
@@ -13,6 +17,22 @@ module ::AmberComponent
   class EmptyViewError < Error; end
   class UnknownViewTypeError < Error; end
   class MultipleViewsError < Error; end
+
+  # @return [Pathname]
+  ROOT_GEM_PATH = ::Pathname.new ::File.expand_path('..', __dir__)
+
+  class << self
+    # @return [Configuration]
+    def configuration
+      @configuration ||= Configuration.new
+    end
+
+    # @yieldparam [Configuration]
+    # @return [void]
+    def configure
+      yield configuration
+    end
+  end
 end
 
 require_relative 'amber_component/version'

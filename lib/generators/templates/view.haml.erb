@@ -1,9 +1,13 @@
-.<%= singular_table_name %>
+.<%= singular_table_name %><%= %({ data: { controller: "#{stimulus_controller_id}" } }) if stimulus? %>
   %h1
     Hello from
     %b
       <%= class_name %>
     , initialized at:
     = @time
+  <%- if stimulus? %>
+  %button{ data: { action: "click-><%= stimulus_controller_id %>#greet" }
+    Greet me
+  <% end %>
   %p
     = description
