@@ -34,5 +34,10 @@ module ::AmberComponent
     def stimulus?
       !@stimulus.nil?
     end
+
+    # @return [Boolean]
+    def stimulus_importmap?
+      @stimulus == :importmap
+    end
   end
 end

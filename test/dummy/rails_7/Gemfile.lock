@@ -1,7 +1,7 @@
 PATH
   remote: ../../..
   specs:
-    amber_component (0.0.4)
+    amber_component (1.0.0)
       actionview (>= 6)
       activemodel (>= 6)
       activesupport (>= 6)
@@ -102,9 +102,6 @@ GEM
       activesupport (>= 5.0)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
-    importmap-rails (1.1.5)
-      actionpack (>= 6.0.0)
-      railties (>= 6.0.0)
     io-console (0.5.11)
     irb (1.4.1)
       reline (>= 0.3.0)
@@ -193,8 +190,6 @@ GEM
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
     sqlite3 (1.4.4)
-    stimulus-rails (1.1.0)
-      railties (>= 6.0.0)
     strscan (3.0.4)
     thor (1.2.1)
     tilt (2.0.11)
@@ -230,14 +225,12 @@ DEPENDENCIES
   byebug
   capybara
   debug
-  importmap-rails
   jbuilder
   puma (~> 5.0)
   rails (~> 7.0.3, >= 7.0.3.1)
   selenium-webdriver
   sprockets-rails
   sqlite3 (~> 1.4)
-  stimulus-rails
   turbo-rails
   tzinfo-data
   web-console

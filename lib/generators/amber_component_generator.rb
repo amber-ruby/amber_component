@@ -58,11 +58,22 @@ class AmberComponentGenerator < ::Rails::Generators::NamedBase
     ::AmberComponent.configuration.stimulus?
   end
 
+  # @return [Boolean]
+  def stimulus_importmap?
+    ::AmberComponent.configuration.stimulus_importmap?
+  end
+
   # @return [void]
   def create_stimulus_controller
     return unless stimulus?
 
     template 'controller.js.erb', "app/components/#{file_path}/controller.js"
+    return if stimulus_importmap?
+
+    append_file 'app/javascript/controllers/components.js', <<~JS
+      import #{stimulus_controller_class_name} from "../../components/#{file_path}/controller"
+      application.register("#{stimulus_controller_id}", #{stimulus_controller_class_name})
+    JS
   end
 
   # @return [void]
@@ -91,5 +102,10 @@ class AmberComponentGenerator < ::Rails::Generators::NamedBase
   # @return [String]
   def stimulus_controller_id
     file_path.gsub('_', '-').gsub('/', '--')
+  end
+
+  # @return [String]
+  def stimulus_controller_class_name
+    file_path.gsub('/', '_').camelize
   end
 end

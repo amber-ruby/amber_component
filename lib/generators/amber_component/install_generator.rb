@@ -38,7 +38,6 @@ module ::AmberComponent
         stimulus = options[:stimulus]&.to_sym
         return unless stimulus
 
-
         case stimulus
         when :stimulus, :importmap
           stimulus_integration = :importmap
