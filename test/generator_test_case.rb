@@ -6,6 +6,12 @@ require_relative 'test_case'
 
 class GeneratorTestCase < ::TestCase;
   # @return [String]
+  RAILS_PROJECT_PATH = 'test/dummy/rails7'
+  # @return [String]
+  RAILS_IMPORTMAP_PROJECT_PATH = 'test/dummy/rails7_importmap'
+  # @return [String]
+  RAILS_WEBPACK_PROJECT_PATH = 'test/dummy/rails7_webpack'
+  # @return [String]
   COMPONENTS_ROOT_PATH = 'app/components'
   # @return [String]
   COMPONENTS_TEST_ROOT_PATH = 'test/components'
