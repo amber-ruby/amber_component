@@ -33,4 +33,5 @@ require 'git'
   require file
 end
 
-class ::TestCase < ::Minitest::Test; end
+require_relative 'test_case'
+require_relative 'generator_test_case'

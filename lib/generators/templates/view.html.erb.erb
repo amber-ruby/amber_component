@@ -1,7 +1,10 @@
-<div class='<%= singular_table_name %>'>
+<div class="<%= singular_table_name %>"<%= %( data-controller="#{stimulus_controller_id}") if stimulus? %>>
   <h1>
     Hello from <b><%= class_name %></b>, initialized at: <%%= @time %>
   </h1>
+  <%- if stimulus? %>
+  <button data-action="click-><%= stimulus_controller_id %>#greet">Greet me</button>
+  <% end %>
   <p>
     <%%= description %>
   </p>
