@@ -43,7 +43,4 @@ require_relative "lib/amber_component/version"
   spec.add_dependency "activesupport", ">= 6"
   spec.add_dependency "memery", ">= 1.4.1"
   spec.add_dependency "tilt", ">= 2.0.10"
-
-  # For more information and examples about making a new gem, check out our
-  # guide at: https://bundler.io/guides/creating_gem.html
 end
