@@ -9,7 +9,7 @@
 
 # AmberComponent
 
-AmberComponent is a simple component library which seamlessly hooks into your Rails project and allows you to create simple backend components. They work like mini controllers which are bound with their view and stylesheet.
+AmberComponent is a simple component library which seamlessly hooks into your Rails project and allows you to create simple backend components which consist of a Ruby controller, view, stylesheet and even a JavaScript controller (using [Stimulus](https://stimulus.hotwired.dev/)).
 
 Created by [Garbus Beach](https://github.com/garbusbeach) and [Mateusz Drewniak](https://github.com/Verseth).
 
@@ -33,16 +33,37 @@ If you're using a Rails application there's an installation generator that you s
 $ bin/rails generate amber_component:install
 ```
 
+Amber component supports [Stimulus](https://stimulus.hotwired.dev/) to make your components
+reactive using JavaScript.
+
+If you want to use stimulus you should install this gem with the `--stimulus` flag
+
+```sh
+$ bin/rails generate amber_component:install --stimulus
+```
+
 ## Usage
 
-## Components
+### Components
 
-Components are located under `app/components`.
+Components are located under `app/components`. And their tests under `test/components`.
 
 Every component consists of:
 - a Ruby file which defines its properties, encapsulates logic and may implement helper methods (like a controller)
 - a view/template file (html.erb, haml, slim etc.)
 - a style file (css, scss, sass etc.)
+- [optional] a JavaScript file with a Stimulus controller (if you installed the gem with `--stimulus`)
+
+```
+app/components/
+├─ [name]_component.rb
+└─ [name]_component/
+   ├─ style.css     # may be .sass or .scss
+   ├─ view.html.erb
+   └─ controller.js # if stimulus is configured
+test/components/
+└─ [name]_component_test.rb
+```
 
 An individual component which implements a button may look like this.
 
@@ -57,7 +78,9 @@ end
 ```html
 <!-- app/components/button_component/view.html.erb -->
 
-<div class="button_component">
+<div class="button_component"
+     data-controller="button-component"
+     data-action="click->button-component#greet">
     <%= label %>
 </div>
 ```
@@ -74,6 +97,25 @@ end
         background-color: blue;
     }
 }
+```
+
+If you used the `--stimulus` option when installing the gem, a JS controller will be generated as well.
+```js
+// app/components/button_component/controller.js
+
+import { Controller } from "@hotwired/stimulus"
+
+// Read more about Stimulus here https://stimulus.hotwired.dev/
+export default class extends Controller {
+  connect() {
+    console.log("Stimulus controller 'button-component' is connected!")
+  }
+
+  greet() {
+    alert("Hi there!")
+  }
+}
+
 ```
 
 You can render this component in other components or in a Rails view.
@@ -97,34 +139,69 @@ ButtonComponent.call label: 'Click me!'
 #=> '<div class="button_component">Click me!</div>'
 ```
 
-### Rails helpers inside component templates
+### Components with namespaces
 
-Component views/template files can make use
-of all ActionView helpers and Rails route helpers.
+Components may be defined inside multiple modules/namespaces.
 
-This makes component views very flexible and convenient.
+```ruby
+# app/components/sign_up/button_component.rb
 
-```erb
-<!-- app/components/login_form_component/view.html.erb -->
+class SignUp::ButtonComponent < AmberComponent::Base
+  prop :label, required: true
+end
+```
 
-<%= form_with url: sign_up_path, class: "login_form_component" do |f| %>
-  <%= f.label :first_name %>
-  <%= f.text_field :first_name %>
+```html
+<!-- app/components/sign_up/button_component/view.html.erb -->
 
-  <%= f.label :last_name %>
-  <%= f.text_field :last_name %>
+<div class="sign_up_button_component">
+    <%= label %>
+</div>
+```
 
-  <%= f.label :email, "Email Address" %>
-  <%= f.text_field :email %>
+```scss
+// app/components/sign_up/button_component/style.scss
 
-  <%= f.label :password %>
-  <%= f.password_field :password %>
+.sign_up_button_component {
+    background-color: indigo;
+    border-radius: 1rem;
+    transition-duration: 500ms;
 
-  <%= f.label :password_confirmation, "Confirm Password" %>
-  <%= f.password_field :password_confirmation %>
+    &:hover {
+        background-color: blue;
+    }
+}
+```
 
-  <%= f.submit "Create account" %>
-<% end %>
+You can render such a component by calling the `::call` method
+on its class, or by using the helper method defined on its parent module.
+
+```ruby
+SignUp::ButtonComponent.call label: 'Sign up!'
+SignUp.button_component label: 'Sign up!'
+```
+
+### Generating Components
+
+You can generate new components by running
+
+```sh
+$ bin/rails generate component [name]
+```
+
+Name of the component may be PascalCased like `FooBar` or snake_cased `foo_bar`
+
+This will generate a new component in `app/components/[name]_component.rb` along with a view, stylesheet, test file and a stimulus controller (if configured).
+
+```
+app/components/
+├─ [name]_component.rb
+└─ [name]_component/
+   ├─ style.css
+   ├─ view.html.erb
+   └─ controller.js # if stimulus is configured
+test/components/
+└─ [name]_component_test.rb
 ```
 
 ### Component properties
@@ -153,39 +230,6 @@ or the helper method.
 CommentComponent.call body: 'Foo bar', author: User.first
 # only in views and other components
 comment_component body: 'Foo bar', author: User.first
-```
-
-### Overriding prop getters and setters
-
-Getters and setters for properties are
-defined in a module which means that you can override them and call them with `super`.
-
-```ruby
-# app/components/priority_icon_component.rb
-
-class PriorityIconComponent < ApplicationComponent
-    PriorityStruct = Struct.new :icon, :color
-
-    PRIORITY_MAP = {
-        low: PriorityStruct.new('fa-solid fa-chevrons-down', 'green'),
-        medium: PriorityStruct.new('fa-solid fa-chevron-up', 'yellow'),
-        high: PriorityStruct.new('fa-solid fa-chevrons-up', 'red')
-    }
-
-    prop :severity, default: -> { :low }
-
-    def severity=(val)
-      # super will call the original
-      # implementation of the setter
-      super(PRIORITY_MAP[val])
-    end
-end
-```
-
-```html
-<!-- app/components/priority_icon_component/view.html.erb -->
-
-<i style="color: <%= severity&.color %>;" class="<%= severity&.icon %>"></i>
 ```
 
 ### Helper methods
@@ -237,6 +281,39 @@ end
         <%= body %>
     </div>
 </div>
+```
+
+### Overriding prop getters and setters
+
+Getters and setters for properties are
+defined in a module which means that you can override them and call them with `super`.
+
+```ruby
+# app/components/priority_icon_component.rb
+
+class PriorityIconComponent < ApplicationComponent
+    PriorityStruct = Struct.new :icon, :color
+
+    PRIORITY_MAP = {
+        low: PriorityStruct.new('fa-solid fa-chevrons-down', 'green'),
+        medium: PriorityStruct.new('fa-solid fa-chevron-up', 'yellow'),
+        high: PriorityStruct.new('fa-solid fa-chevrons-up', 'red')
+    }
+
+    prop :severity, default: -> { :low }
+
+    def severity=(val)
+      # super will call the original
+      # implementation of the setter
+      super(PRIORITY_MAP[val])
+    end
+end
+```
+
+```html
+<!-- app/components/priority_icon_component/view.html.erb -->
+
+<i style="color: <%= severity&.color %>;" class="<%= severity&.icon %>"></i>
 ```
 
 ### Nested components
@@ -304,63 +381,35 @@ In general `block_given?` will return `true` when a block/nested content is pres
 You can use it to render content conditionally based on
 whether nested content is present.
 
-### Components with namespaces
+### Rails helpers inside component templates
 
-Components may be defined inside multiple modules/namespaces.
+Component views/template files can make use
+of all ActionView helpers and Rails route helpers.
 
-```ruby
-# app/components/sign_up/button_component.rb
+This makes component views very flexible and convenient.
 
-class SignUp::ButtonComponent < AmberComponent::Base
-  prop :label, required: true
-end
+```erb
+<!-- app/components/login_form_component/view.html.erb -->
+
+<%= form_with url: sign_up_path, class: "login_form_component" do |f| %>
+  <%= f.label :first_name %>
+  <%= f.text_field :first_name %>
+
+  <%= f.label :last_name %>
+  <%= f.text_field :last_name %>
+
+  <%= f.label :email, "Email Address" %>
+  <%= f.text_field :email %>
+
+  <%= f.label :password %>
+  <%= f.password_field :password %>
+
+  <%= f.label :password_confirmation, "Confirm Password" %>
+  <%= f.password_field :password_confirmation %>
+
+  <%= f.submit "Create account" %>
+<% end %>
 ```
-
-```html
-<!-- app/components/sign_up/button_component/view.html.erb -->
-
-<div class="sign_up_button_component">
-    <%= label %>
-</div>
-```
-
-```scss
-// app/components/sign_up/button_component/style.scss
-
-.sign_up_button_component {
-    background-color: indigo;
-    border-radius: 1rem;
-    transition-duration: 500ms;
-
-    &:hover {
-        background-color: blue;
-    }
-}
-```
-
-You can render such a component by calling the `::call` method
-on its class, or by using the helper method defined on its parent module.
-
-```ruby
-SignUp::ButtonComponent.call label: 'Sign up!'
-SignUp.button_component label: 'Sign up!'
-```
-
-### Generating Components
-
-You an generate new components by running
-
-```sh
-$ bin/rails generate component foo_bar
-```
-
-or
-
-```sh
-$ bin/rails generate component FooBar
-```
-
-This will generate a new component in `app/components/foo_bar_component.rb` along with a view, stylesheet and test file.
 
 ### Testing Components
 
