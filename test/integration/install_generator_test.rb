@@ -69,7 +69,7 @@ module Integration
       should 'install with stimulus' do
         assert rails "g #{INSTALL_GENERATOR} --stimulus"
         git.add
-        assert_equal 15, git.diff.entries.size
+        assert git.diff.entries.size.between?(15, 16)
 
         diff = file_diff 'app/javascript/controllers/index.js'
         assert_equal 'new', diff.type
