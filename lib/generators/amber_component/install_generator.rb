@@ -11,11 +11,11 @@ module ::AmberComponent
       source_root ::File.expand_path('templates', __dir__)
 
       # @return [Array<Symbol>]
-      STIMULUS_INTEGRATIONS = %i[stimulus importmap jsbundling webpack esbuild rollup].freeze
+      STIMULUS_INTEGRATIONS = %i[stimulus importmap webpacker jsbundling webpack esbuild rollup].freeze
 
       class_option :stimulus,
                    desc: "Configure the app to use Stimulus.js wih components to make them interactive " \
-                         "[options: importmap (default), jsbundling, webpack, esbuild, rollup]"
+                         "[options: importmap (default), webpacker (legacy), jsbundling, webpack, esbuild, rollup]"
 
       def setup
         copy_file 'application_component.rb', 'app/components/application_component.rb'
@@ -43,6 +43,9 @@ module ::AmberComponent
           if defined?(::Jsbundling)
             stimulus_integration = :jsbundling
             configure_stimulus_jsbundling
+          elsif defined?(::Webpacker)
+            stimulus_integration = :webpacker
+            configure_stimulus_webpacker
           else
             stimulus_integration = :importmap
             configure_stimulus_importmap
@@ -53,6 +56,9 @@ module ::AmberComponent
         when :jsbundling, :webpack, :esbuild, :rollup
           stimulus_integration = :jsbundling
           configure_stimulus_jsbundling
+        when :webpacker
+          stimulus_integration = :webpacker
+          configure_stimulus_webpacker
         end
 
         create_file 'config/initializers/amber_component.rb', <<~RUBY
@@ -81,6 +87,17 @@ module ::AmberComponent
       def configure_stimulus_jsbundling
         install_stimulus
         append_file 'app/javascript/application.js', %(import "./controllers/components"\n)
+        create_file 'app/javascript/controllers/components.js', <<~JS
+          // This file has been created by `amber_component` and will
+          // register all stimulus controllers from your components
+          import { application } from "./application"
+        JS
+      end
+
+      def configure_stimulus_webpacker
+        install_stimulus
+        append_file 'app/javascript/packs/application.js', %(import "controllers"\n)
+        append_file 'app/javascript/controllers/index.js', %(import "./components"\n)
         create_file 'app/javascript/controllers/components.js', <<~JS
           // This file has been created by `amber_component` and will
           // register all stimulus controllers from your components
