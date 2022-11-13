@@ -4,7 +4,7 @@ require 'fileutils'
 
 require_relative 'test_case'
 
-class GeneratorTestCase < ::TestCase;
+class GeneratorTestCase < ::TestCase
   # @return [String]
   RAILS_PROJECT_PATH = 'test/dummy/rails7'
   # @return [String]

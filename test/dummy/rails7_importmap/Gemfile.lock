@@ -1,3 +1,13 @@
+PATH
+  remote: ../../..
+  specs:
+    amber_component (1.0.0)
+      actionview (>= 6)
+      activemodel (>= 6)
+      activesupport (>= 6)
+      memery (>= 1.4.1)
+      tilt (>= 2.0.10)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -108,6 +118,8 @@ GEM
       mini_mime (>= 0.1.1)
     marcel (1.0.2)
     matrix (0.4.2)
+    memery (1.4.1)
+      ruby2_keywords (~> 0.0.2)
     method_source (1.0.0)
     mini_mime (1.1.2)
     minitest (5.16.3)
@@ -162,6 +174,7 @@ GEM
     reline (0.3.1)
       io-console (~> 0.5)
     rexml (3.2.5)
+    ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
     selenium-webdriver (4.6.1)
       childprocess (>= 0.5, < 5.0)
@@ -179,6 +192,7 @@ GEM
     stimulus-rails (1.1.1)
       railties (>= 6.0.0)
     thor (1.2.1)
+    tilt (2.0.11)
     timeout (0.3.0)
     turbo-rails (1.3.2)
       actionpack (>= 6.0.0)
@@ -207,6 +221,7 @@ PLATFORMS
   arm64-darwin-20
 
 DEPENDENCIES
+  amber_component!
   bootsnap
   capybara
   debug

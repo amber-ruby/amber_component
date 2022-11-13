@@ -5,17 +5,17 @@ module ::AmberComponent
   # for this gem.
   class Configuration
     # @return [Array<Symbol>]
-    STIMULUS_INTEGRATIONS = %i[importmap js_bundler webpack esbuild rollup].freeze
+    STIMULUS_INTEGRATIONS = %i[importmap jsbundling webpack esbuild rollup].freeze
 
     # How Stimulus.js is bundled in this app.
-    # Possible values: `[nil, :importmap, :js_bundler, :webpack, :esbuild, :rollup]`
+    # Possible values: `[nil, :importmap, :jsbundling, :webpack, :esbuild, :rollup]`
     # `nil` indicates that stimulus should not be used (default behaviour).
     #
     # @return [Symbol, nil]
     attr_reader :stimulus
 
     # How Stimulus.js is bundled in this app.
-    # Possible values: `[nil, :importmap, :js_bundler, :webpack, :esbuild, :rollup]`
+    # Possible values: `[nil, :importmap, :jsbundling, :webpack, :esbuild, :rollup]`
     # `nil` indicates that stimulus should not be used (default behaviour).
     #
     # @param val [Symbol, String, nil]

@@ -11,11 +11,11 @@ module ::AmberComponent
       source_root ::File.expand_path('templates', __dir__)
 
       # @return [Array<Symbol>]
-      STIMULUS_INTEGRATIONS = %i[stimulus importmap js_bundler webpack esbuild rollup].freeze
+      STIMULUS_INTEGRATIONS = %i[stimulus importmap jsbundling webpack esbuild rollup].freeze
 
       class_option :stimulus,
                    desc: "Configure the app to use Stimulus.js wih components to make them interactive " \
-                         "[options: importmap (default), js_bundler, webpack, esbuild, rollup]"
+                         "[options: importmap (default), jsbundling, webpack, esbuild, rollup]"
 
       def setup
         copy_file 'application_component.rb', 'app/components/application_component.rb'
@@ -39,28 +39,20 @@ module ::AmberComponent
         return unless stimulus
 
         case stimulus
-        when :stimulus, :importmap
+        when :stimulus
+          if defined?(::Jsbundling)
+            stimulus_integration = :jsbundling
+            configure_stimulus_jsbundling
+          else
+            stimulus_integration = :importmap
+            configure_stimulus_importmap
+          end
+        when :importmap
           stimulus_integration = :importmap
-          install_importmap
-          install_stimulus
-          append_file 'config/importmap.rb', <<~RUBY
-            pin "@amber_component/stimulus_loading", to: "amber_component/stimulus_loading.js", preload: true
-            pin_all_from "app/components"
-          RUBY
-          append_file 'app/javascript/controllers/index.js', <<~JS
-            import { eagerLoadAmberComponentControllers } from "@amber_component/stimulus_loading"
-            eagerLoadAmberComponentControllers(application)
-          JS
-          append_file 'app/assets/config/manifest.js', %(//= link_tree ../../components .js\n)
-        when :js_bundler, :webpack, :esbuild, :rollup
-          stimulus_integration = :js_bundler
-          install_stimulus
-          append_file 'app/javascript/application.js', %(import "./controllers/components"\n)
-          create_file 'app/javascript/controllers/components.js', <<~JS
-            // This file has been created by `amber_component` and will
-            // register all stimulus controllers from your components
-            import { application } from "./application"
-          JS
+          configure_stimulus_importmap
+        when :jsbundling, :webpack, :esbuild, :rollup
+          stimulus_integration = :jsbundling
+          configure_stimulus_jsbundling
         end
 
         create_file 'config/initializers/amber_component.rb', <<~RUBY
@@ -70,6 +62,30 @@ module ::AmberComponent
             c.stimulus = :#{stimulus_integration}
           end
         RUBY
+      end
+
+      def configure_stimulus_importmap
+        install_importmap
+        install_stimulus
+        append_file 'config/importmap.rb', <<~RUBY
+          pin "@amber_component/stimulus_loading", to: "amber_component/stimulus_loading.js", preload: true
+          pin_all_from "app/components"
+        RUBY
+        append_file 'app/javascript/controllers/index.js', <<~JS
+          import { eagerLoadAmberComponentControllers } from "@amber_component/stimulus_loading"
+          eagerLoadAmberComponentControllers(application)
+        JS
+        append_file 'app/assets/config/manifest.js', %(//= link_tree ../../components .js\n)
+      end
+
+      def configure_stimulus_jsbundling
+        install_stimulus
+        append_file 'app/javascript/application.js', %(import "./controllers/components"\n)
+        create_file 'app/javascript/controllers/components.js', <<~JS
+          // This file has been created by `amber_component` and will
+          // register all stimulus controllers from your components
+          import { application } from "./application"
+        JS
       end
 
       # @return [void]

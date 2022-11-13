@@ -4,7 +4,7 @@ require 'test_helper'
 require 'fileutils'
 
 module Integration
-  class GeneratorTest < ::GeneratorTestCase
+  class InstallGeneratorTest < ::GeneratorTestCase
     context 'rails without importmap and js bundling' do
       setup do
         setup_git_repo RAILS_PROJECT_PATH
