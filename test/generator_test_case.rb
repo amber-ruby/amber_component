@@ -5,12 +5,22 @@ require 'fileutils'
 require_relative 'test_case'
 
 class GeneratorTestCase < ::TestCase
+  # Rails 7 project without `importmap-rails`, `jsbundling` and `stimulus-rails`
+  #
   # @return [String]
   RAILS_PROJECT_PATH = 'test/dummy/rails7'
+  # Rails 7 project with `importmap-rails` and `stimulus-rails`
+  #
   # @return [String]
   RAILS_IMPORTMAP_PROJECT_PATH = 'test/dummy/rails7_importmap'
+  # Rails 7 project with `jsbundling-rails`, `stimulus-rails` and `haml-rails`
+  #
   # @return [String]
-  RAILS_WEBPACK_PROJECT_PATH = 'test/dummy/rails7_webpack'
+  RAILS_JSBUNDLING_WEBPACK_PROJECT_PATH = 'test/dummy/rails7_webpack'
+  # Rails 6 project with `webpacker`, `sass-rails` and `slim-rails`
+  #
+  # @return [String]
+  RAILS_WEBPACKER_PROJECT_PATH = 'test/dummy/rails6_webpacker'
   # @return [String]
   COMPONENTS_ROOT_PATH = 'app/components'
   # @return [String]

@@ -17,7 +17,7 @@ module Integration
       should 'install and uninstall the gem' do
         assert rails "g #{INSTALL_GENERATOR}"
         git.add
-        assert_equal 4, git.diff.entries.size
+        assert_equal 5, git.diff.entries.size
 
         diff = file_diff component_path('application_component.rb')
         assert_equal 'new', diff.type
@@ -59,6 +59,18 @@ module Integration
         assert_equal 'modified', diff.type
         assert diff.patch.include?(<<~PATCH.chomp)
           +require_relative 'application_component_test_case'
+        PATCH
+
+        diff = file_diff 'config/initializers/amber_component.rb'
+        assert_equal 'new', diff.type
+        assert diff.patch.end_with?(<<~PATCH.chomp)
+          +# frozen_string_literal: true
+          +
+          +::AmberComponent.configure do |c|
+          +  c.stimulus = nil
+          +  c.stylesheet_format = :css
+          +  c.view_format = :erb
+          +end
         PATCH
 
         assert rails "d #{INSTALL_GENERATOR}"
@@ -115,6 +127,8 @@ module Integration
           +
           +::AmberComponent.configure do |c|
           +  c.stimulus = :importmap
+          +  c.stylesheet_format = :css
+          +  c.view_format = :erb
           +end
         PATCH
 
@@ -204,6 +218,8 @@ module Integration
           +
           +::AmberComponent.configure do |c|
           +  c.stimulus = :importmap
+          +  c.stylesheet_format = :css
+          +  c.view_format = :erb
           +end
         PATCH
 
@@ -252,9 +268,9 @@ module Integration
 
     end
 
-    context 'rails with jsbundling' do
+    context 'rails with jsbundling and haml' do
       setup do
-        setup_git_repo RAILS_WEBPACK_PROJECT_PATH
+        setup_git_repo RAILS_JSBUNDLING_WEBPACK_PROJECT_PATH
       end
 
       teardown do
@@ -287,6 +303,8 @@ module Integration
           +
           +::AmberComponent.configure do |c|
           +  c.stimulus = :jsbundling
+          +  c.stylesheet_format = :css
+          +  c.view_format = :haml
           +end
         PATCH
 
@@ -332,7 +350,97 @@ module Integration
           +require_relative 'application_component_test_case'
         PATCH
       end
-
     end
+
+    context 'rails 6 with webpacker sass and slim' do
+      setup do
+        setup_git_repo RAILS_WEBPACKER_PROJECT_PATH
+      end
+
+      teardown do
+        reset_git_repo
+      end
+
+      should 'install with stimulus' do
+        assert rails "g #{INSTALL_GENERATOR} --stimulus"
+        git.add
+        assert_equal 14, git.diff.entries.size
+
+        diff = file_diff 'app/javascript/packs/application.js'
+        assert_equal 'modified', diff.type
+        assert diff.patch.end_with?(<<~PATCH.chomp)
+          +import "controllers"
+        PATCH
+
+        diff = file_diff 'app/javascript/controllers/index.js'
+        assert_equal 'new', diff.type
+        assert diff.patch.end_with?(<<~PATCH.chomp)
+          +import "./components"
+        PATCH
+
+        diff = file_diff 'app/javascript/controllers/components.js'
+        assert_equal 'new', diff.type
+        assert diff.patch.end_with?(<<~PATCH.chomp)
+          +// This file has been created by `amber_component` and will
+          +// register all stimulus controllers from your components
+          +import { application } from "./application"
+        PATCH
+
+        diff = file_diff 'config/initializers/amber_component.rb'
+        assert_equal 'new', diff.type
+        assert diff.patch.end_with?(<<~PATCH.chomp)
+          +# frozen_string_literal: true
+          +
+          +::AmberComponent.configure do |c|
+          +  c.stimulus = :webpacker
+          +  c.stylesheet_format = :scss
+          +  c.view_format = :slim
+          +end
+        PATCH
+
+        diff = file_diff component_path('application_component.rb')
+        assert_equal 'new', diff.type
+        assert diff.patch.end_with?(<<~PATCH.chomp)
+          +# frozen_string_literal: true
+          +
+          +# Abstract class which should serve as a superclass
+          +# for all your custom components in this app.
+          +#
+          +# @abstract Subclass to create a new component.
+          +class ::ApplicationComponent < ::AmberComponent::Base
+          +  # Include your global application helper.
+          +  include ::ApplicationHelper
+          +  # Include the helper methods for your application's
+          +  # routes.
+          +  include ::Rails.application.routes.url_helpers
+          +end
+        PATCH
+
+        diff = file_diff 'app/assets/stylesheets/application.css'
+        assert_equal 'modified', diff.type
+        assert diff.patch.include?(<<~PATCH.chomp)
+          + *= require_tree ./../../components
+        PATCH
+
+        diff = file_diff 'test/application_component_test_case.rb'
+        assert_equal 'new', diff.type
+        assert diff.patch.include?(<<~PATCH.chomp)
+          +# frozen_string_literal: true
+          +
+          +require 'amber_component/test_helper'
+          +
+          +class ApplicationComponentTestCase < ::ActiveSupport::TestCase
+          +  include ::AmberComponent::TestHelper
+          +end
+        PATCH
+
+        diff = file_diff 'test/test_helper.rb'
+        assert_equal 'modified', diff.type
+        assert diff.patch.include?(<<~PATCH.chomp)
+          +require_relative 'application_component_test_case'
+        PATCH
+      end
+    end
+
   end
 end

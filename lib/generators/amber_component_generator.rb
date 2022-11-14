@@ -7,33 +7,26 @@ class AmberComponentGenerator < ::Rails::Generators::NamedBase
   desc 'Generate a new component'
   source_root ::File.expand_path('templates', __dir__)
 
-  # @return [Array<Symbol>]
-  VIEW_FORMATS = %i[html erb haml slim].freeze
-  # @return [Array<Symbol>]
-  STYLE_FORMATS = %i[css scss sass].freeze
-
   class_option :view,
                aliases: ['-v'],
-               desc: "Indicate what type of view should be generated eg. #{VIEW_FORMATS}"
+               desc: "Indicate what type of view should be generated " \
+                     "eg. #{::AmberComponent::Configuration::ALLOWED_VIEWS}"
 
   class_option :css,
-               aliases: ['--style', '-c'],
-               desc: "Indicate what type of styles should be generated eg. #{STYLE_FORMATS}"
+               aliases: ['--styles', '-c'],
+               desc: "Indicate what type of styles should be generated " \
+                     "eg. #{::AmberComponent::Configuration::ALLOWED_STYLES}"
 
   def generate_component
-    @view_format = (options[:view] || :html).to_sym
-    @view_format = :html if @view_format == :erb
+    set_view_format
+    set_stylesheet_format
 
-    @style_format = options[:css]&.to_sym
-
-    unless VIEW_FORMATS.include? @view_format
-      puts "No such view format as `#{@view_format}`"
-      return
+    unless ::AmberComponent::Configuration::ALLOWED_VIEWS.include? @view_format
+      raise ::ArgumentError, "No such view format as `#{@view_format}`"
     end
 
-    if !@style_format.nil? && STYLE_FORMATS.include?(@style_format)
-      puts "No such css/style format as `#{@style_format}`"
-      return
+    unless ::AmberComponent::Configuration::ALLOWED_STYLES.include?(@stylesheet_format)
+      raise ::ArgumentError, "No such css/style format as `#{@stylesheet_format}`"
     end
 
     template 'component.rb.erb', "app/components/#{file_path}.rb"
@@ -52,6 +45,14 @@ class AmberComponentGenerator < ::Rails::Generators::NamedBase
   end
 
   private
+
+  def set_view_format
+    @view_format = options[:view]&.to_sym || ::AmberComponent.configuration.view_format || :erb
+  end
+
+  def set_stylesheet_format
+    @stylesheet_format = options[:style]&.to_sym || ::AmberComponent.configuration.stylesheet_format || :css
+  end
 
   # @return [Boolean]
   def stimulus?
@@ -90,9 +91,10 @@ class AmberComponentGenerator < ::Rails::Generators::NamedBase
 
   # @return [void]
   def create_stylesheet
-    if (@style_format.nil? && defined?(::SassC)) || @style_format == :scss
+    case @stylesheet_format
+    when :scss
       template 'style.scss.erb', "app/components/#{file_path}/style.scss"
-    elsif @style_format == :sass
+    when :sass
       template 'style.sass.erb', "app/components/#{file_path}/style.sass"
     else
       template 'style.css.erb', "app/components/#{file_path}/style.css"
