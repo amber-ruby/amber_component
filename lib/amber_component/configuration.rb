@@ -5,7 +5,7 @@ module ::AmberComponent
   # for this gem.
   class Configuration
     # @return [Set<Symbol>]
-    STIMULUS_INTEGRATIONS = ::Set.new(%i[stimulus importmap webpacker jsbundling webpack esbuild rollup])
+    STIMULUS_INTEGRATIONS = ::Set[nil, :importmap, :webpacker, :jsbundling, :webpack, :esbuild, :rollup]
     # @return [Set<Symbol>]
     ALLOWED_STYLES = ::Set.new(%i[css scss sass])
     # @return [Set<Symbol>]

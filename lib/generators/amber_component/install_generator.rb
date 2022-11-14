@@ -120,9 +120,9 @@ module ::AmberComponent
           # frozen_string_literal: true
 
           ::AmberComponent.configure do |c|
-            c.stimulus = #{@stimulus.inspect}
-            c.stylesheet_format = #{@styles.inspect}
-            c.view_format = #{@views.inspect}
+            c.stimulus = #{@stimulus.inspect} # #{Configuration::STIMULUS_INTEGRATIONS.to_a}
+            c.stylesheet_format = #{@styles.inspect} # #{Configuration::ALLOWED_STYLES.to_a}
+            c.view_format = #{@views.inspect} # #{Configuration::ALLOWED_VIEWS.to_a}
           end
         RUBY
       end

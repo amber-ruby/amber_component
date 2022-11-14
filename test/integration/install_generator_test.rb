@@ -67,9 +67,9 @@ module Integration
           +# frozen_string_literal: true
           +
           +::AmberComponent.configure do |c|
-          +  c.stimulus = nil
-          +  c.stylesheet_format = :css
-          +  c.view_format = :erb
+          +  c.stimulus = nil # [nil, :importmap, :webpacker, :jsbundling, :webpack, :esbuild, :rollup]
+          +  c.stylesheet_format = :css # [:css, :scss, :sass]
+          +  c.view_format = :erb # [:erb, :haml, :slim]
           +end
         PATCH
 
@@ -126,9 +126,9 @@ module Integration
           +# frozen_string_literal: true
           +
           +::AmberComponent.configure do |c|
-          +  c.stimulus = :importmap
-          +  c.stylesheet_format = :css
-          +  c.view_format = :erb
+          +  c.stimulus = :importmap # [nil, :importmap, :webpacker, :jsbundling, :webpack, :esbuild, :rollup]
+          +  c.stylesheet_format = :css # [:css, :scss, :sass]
+          +  c.view_format = :erb # [:erb, :haml, :slim]
           +end
         PATCH
 
@@ -217,9 +217,9 @@ module Integration
           +# frozen_string_literal: true
           +
           +::AmberComponent.configure do |c|
-          +  c.stimulus = :importmap
-          +  c.stylesheet_format = :css
-          +  c.view_format = :erb
+          +  c.stimulus = :importmap # [nil, :importmap, :webpacker, :jsbundling, :webpack, :esbuild, :rollup]
+          +  c.stylesheet_format = :css # [:css, :scss, :sass]
+          +  c.view_format = :erb # [:erb, :haml, :slim]
           +end
         PATCH
 
@@ -302,9 +302,9 @@ module Integration
           +# frozen_string_literal: true
           +
           +::AmberComponent.configure do |c|
-          +  c.stimulus = :jsbundling
-          +  c.stylesheet_format = :css
-          +  c.view_format = :haml
+          +  c.stimulus = :jsbundling # [nil, :importmap, :webpacker, :jsbundling, :webpack, :esbuild, :rollup]
+          +  c.stylesheet_format = :css # [:css, :scss, :sass]
+          +  c.view_format = :haml # [:erb, :haml, :slim]
           +end
         PATCH
 
@@ -392,9 +392,9 @@ module Integration
           +# frozen_string_literal: true
           +
           +::AmberComponent.configure do |c|
-          +  c.stimulus = :webpacker
-          +  c.stylesheet_format = :scss
-          +  c.view_format = :slim
+          +  c.stimulus = :webpacker # [nil, :importmap, :webpacker, :jsbundling, :webpack, :esbuild, :rollup]
+          +  c.stylesheet_format = :scss # [:css, :scss, :sass]
+          +  c.view_format = :slim # [:erb, :haml, :slim]
           +end
         PATCH
 
