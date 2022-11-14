@@ -54,6 +54,13 @@ Every component consists of:
 - a style file (css, scss, sass etc.)
 - [optional] a JavaScript file with a Stimulus controller (if you installed the gem with `--stimulus`)
 
+`amber_component` automatically detects what kind of view and stylesheet formats your app is configured to use.
+
+So if you've got `haml-rails`, components will be generated with `haml`. When your app uses `slim-rails`, components will be generated with `slim`. When your `Gemfile` contains `sassc-rails`, components will use `scss` etc.
+
+All of these formats can be overridden in
+an initializer or by adding arguments to the component generator.
+
 ```
 app/components/
 ├─ [name]_component.rb
@@ -197,11 +204,18 @@ This will generate a new component in `app/components/[name]_component.rb` along
 app/components/
 ├─ [name]_component.rb
 └─ [name]_component/
-   ├─ style.css
-   ├─ view.html.erb
+   ├─ style.css     # may be `.scss` or `.sass`
+   ├─ view.html.erb # may be `.haml` or `.slim`
    └─ controller.js # if stimulus is configured
 test/components/
 └─ [name]_component_test.rb
+```
+
+View and stylesheet formats can be overridden by providing options.
+
+```
+-v, [--view=VIEW]          # Indicate what type of view should be generated eg. [:erb, :haml, :slim]
+--styles, -c, [--css=CSS]  # Indicate what type of styles should be generated eg. [:css, :scss, :sass]
 ```
 
 ### Component properties
@@ -409,6 +423,21 @@ This makes component views very flexible and convenient.
 
   <%= f.submit "Create account" %>
 <% end %>
+```
+
+### Configuration
+
+This gem can be configured in an initializer.
+If you used the installer generator it should already be present.
+
+```ruby
+# config/initializers/amber_component.rb
+
+::AmberComponent.configure do |c|
+    c.stimulus = nil # [nil, :importmap, :webpacker, :jsbundling, :webpack, :esbuild, :rollup]
+    c.stylesheet_format = :css # [:css, :scss, :sass]
+    c.view_format = :erb # [:erb, :haml, :slim]
+end
 ```
 
 ### Testing Components

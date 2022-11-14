@@ -8,7 +8,7 @@ module ::AmberComponent
     # @return [Set<Symbol>]
     VIEW_TYPES_WITH_RUBY = ::Set[:erb, :haml, :slim].freeze
     # @return [Set<Symbol>]
-    ALLOWED_VIEW_TYPES = ::Set[:erb, :haml, :slim, :html, :md, :markdown].freeze
+    ALLOWED_VIEW_TYPES = ::Set[:erb, :haml, :slim, :html].freeze
     # @return [Regexp]
     VIEW_FILE_REGEXP  = /^view\./.freeze
 

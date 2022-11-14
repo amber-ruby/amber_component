@@ -1,7 +1,7 @@
 PATH
   remote: ../../..
   specs:
-    amber_component (1.0.0)
+    amber_component (1.1.1)
       actionview (>= 6)
       activemodel (>= 6)
       activesupport (>= 6)
@@ -238,9 +238,6 @@ DEPENDENCIES
   tzinfo-data
   web-console
   webdrivers
-
-RUBY VERSION
-   ruby 3.1.2p20
 
 BUNDLED WITH
    2.3.23

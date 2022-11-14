@@ -34,4 +34,12 @@ if [ ! -z "$CI" ]; then
 fi
 bundle install
 
+cd -
+cd test/dummy/rails6_webpacker
+
+if [ ! -z "$CI" ]; then
+  bundle config --local path $PROJECT_ROOT/vendor/bundle
+fi
+bundle install
+
 # Do any other automated setup that you need to do here
