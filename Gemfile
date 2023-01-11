@@ -9,7 +9,7 @@ gem 'rake', '~> 13.0'
 
 # Development dependencies
 gem 'byebug'
-gem 'git'
+gem 'git', '>= 1.13.0'
 gem 'haml'
 gem 'rubocop', '~> 1.21'
 gem 'sassc'
