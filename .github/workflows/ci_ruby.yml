@@ -2,12 +2,16 @@ name: CI Ruby
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ 'main' ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ 'main' ]
 
 permissions:
+  actions: read
+  checks: write
   contents: read
+  pull-requests: write
+  statuses: read
 
 jobs:
   test:
@@ -17,6 +21,9 @@ jobs:
     strategy:
       matrix:
         ruby-version: ['2.7', '3.0', '3.1']
+        include:
+          - ruby-version: '3.1'
+            coverage: true
     steps:
       - name: Configure Git
         run: |
@@ -31,9 +38,24 @@ jobs:
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Run the setup script
         run: ./bin/setup
-      - name: Run tests
-        run: bundle exec rake test
-      - name: Code Coverage
+      - name: Run unit tests
+        env:
+          COVERAGE: ${{ matrix.coverage }}
+        run: bundle exec rake test:unit
+      - name: Run integration tests
+        run: bundle exec rake test:integration
+      - name: Code Coverage report
+        if: ${{ matrix.coverage }}
+        uses: 5monkeys/cobertura-action@master
+        with:
+          path: coverage/coverage.xml
+          minimum_coverage: 90
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          fail_below_threshold: true
+          show_missing: true
+          link_missing_lines: true
+      - name: Prepare data for a Code Coverage badge
+        if: ${{ matrix.coverage }}
         run: |
           echo "COVERAGE=$(./bin/code_coverage)" >> $GITHUB_ENV
           REF=${{ github.ref }}
@@ -41,17 +63,28 @@ jobs:
           IFS='/' read -ra PATHS <<< "$REF"
           BRANCH_NAME="${PATHS[1]}_${PATHS[2]}"
           echo $BRANCH_NAME
-          echo "BRANCH=$(echo ${BRANCH_NAME})" >> $GITHUB_ENV
+          echo "BRANCH=${BRANCH_NAME}" >> $GITHUB_ENV
       - name: Create the Coverage Badge
-        uses: schneegans/dynamic-badges-action@v1.0.0
+        if: ${{ matrix.coverage }}
+        uses: schneegans/dynamic-badges-action@v1.4.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
           gistID: 6a095c79278b074d79feaa4f8ceeb2a8
           filename: amber_component__${{ env.BRANCH }}.json
-          label: Test Coverage
-          message: ${{ env.COVERAGE }}
-          color: success
+          style: flat
+          label: Code Coverage
+          message: ${{ env.COVERAGE }}%
+          logoColor: EB222F
           namedLogo: ruby
+          valColorRange: ${{ env.COVERAGE }}
+          maxColorRange: 100
+          minColorRange: 0
+      - name: Archive code coverage artifacts
+        if: ${{ matrix.coverage }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: code_coverage
+          path: coverage
 
   lint:
     runs-on: ubuntu-latest

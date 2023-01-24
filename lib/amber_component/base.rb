@@ -48,6 +48,8 @@ module ::AmberComponent
     extend  Assets::ClassMethods
     include Rendering::InstanceMethods
     extend  Rendering::ClassMethods
+    include Props::InstanceMethods
+    extend  Props::ClassMethods
 
     class << self
       include ::Memery
@@ -67,37 +69,51 @@ module ::AmberComponent
       # @return [void]
       def inherited(subclass)
         super
-        # @type [Module]
-        method_body = proc do |**kwargs, &block|
+        method_body = lambda do |**kwargs, &block|
           subclass.render(**kwargs, &block)
         end
         parent_module = subclass.module_parent
 
         if parent_module.equal?(::Object)
           method_name = subclass.name
-          define_helper_method(subclass, Helpers::ComponentHelper, method_name, method_body)
           define_helper_method(subclass, Helpers::ComponentHelper, method_name.underscore, method_body)
           return
         end
 
         method_name = subclass.const_name
-        define_helper_method(subclass, parent_module.singleton_class, method_name, method_body)
         define_helper_method(subclass, parent_module.singleton_class, method_name.underscore, method_body)
       end
 
-      # @param component [Class]
+      # Gets or defines an anonymous module that
+      # will store all dynamically generated helper methods
+      # for the received module/class.
+      #
       # @param mod [Module, Class]
+      # @return [Module]
+      def helper_module(mod)
+        ivar_name = :@__amber_component_helper_module
+        mod.instance_variable_get(ivar_name)&.then { return _1 }
+
+        helper_mod = mod.instance_variable_set(ivar_name, ::Module.new)
+        mod.include helper_mod
+        helper_mod
+      end
+
+      # Defines an instance method on the given `mod` Module/Class.
+      #
+      # @param component [Class]
+      # @param target_mod [Module, Class]
       # @param method_name [String, Symbol]
       # @param body [Proc]
-      def define_helper_method(component, mod, method_name, body)
-        mod.define_method(method_name, &body)
+      def define_helper_method(component, target_mod, method_name, body)
+        helper_module(target_mod).define_method(method_name, &body)
 
         return if ::ENV['RAILS_ENV'] == 'production'
 
-        ::Warning.warn <<~WARN if mod.instance_methods.include?(method_name)
+        ::Warning.warn <<~WARN if target_mod.instance_methods.include?(method_name)
           #{caller(0, 1).first}: warning:
-              `#{component}` shadows the name of an already existing `#{mod}` method `#{method_name}`.
-              Consider renaming this component, because the original method will be overwritten.
+              `#{component}` shadows the name of an already existing `#{target_mod}` method `#{method_name}`.
+              Consider renaming this component, because the original method will be overridden.
         WARN
       end
     end
@@ -105,9 +121,12 @@ module ::AmberComponent
     define_model_callbacks :initialize, :render
 
     # @param kwargs [Hash{Symbol => Object}]
+    # @raise [AmberComponent::MissingPropsError] when required props are missing
     def initialize(**kwargs)
       run_callbacks :initialize do
-        bind_variables(kwargs)
+        next if bind_props(kwargs)
+
+        bind_instance_variables(kwargs)
       end
     end
 
@@ -115,7 +134,7 @@ module ::AmberComponent
 
     # @param kwargs [Hash{Symbol => Object}]
     # @return [void]
-    def bind_variables(kwargs)
+    def bind_instance_variables(kwargs)
       kwargs.each do |key, value|
         instance_variable_set("@#{key}", value)
       end

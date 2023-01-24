@@ -2,8 +2,16 @@
 
 require 'test_helper'
 
-class <%= class_name %>Test < ::ActiveSupport::TestCase
-  # test 'the truth' do
-  #   assert true
+class <%= class_name %>Test < ::ApplicationComponentTestCase
+  # For a full list of available assertions see
+  # https://rubydoc.info/github/jnicklas/capybara/Capybara/Node/Matchers
+
+  # test 'returns correct html' do
+  #   render do
+  #     <%= class_name %>.call
+  #   end
+
+  #   assert_text 'Hello from <%= class_name %>'
+  #   assert_selector "div.<%= singular_table_name %> p", text: 'Default Description'
   # end
 end

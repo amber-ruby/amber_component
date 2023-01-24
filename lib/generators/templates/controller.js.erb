@@ -1,0 +1,12 @@
+import { Controller } from "@hotwired/stimulus"
+
+// Read more about Stimulus here https://stimulus.hotwired.dev/
+export default class extends Controller {
+  connect() {
+    console.log("Stimulus controller '<%= stimulus_controller_id %>' is connected!")
+  }
+
+  greet() {
+    alert("Hi there!")
+  }
+}

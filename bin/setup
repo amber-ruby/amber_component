@@ -11,7 +11,31 @@ fi
 
 bundle install
 
-cd test/dummy/rails_7
+cd test/dummy/rails7
+
+if [ ! -z "$CI" ]; then
+  bundle config --local path $PROJECT_ROOT/vendor/bundle
+fi
+bundle install
+
+cd -
+cd test/dummy/rails7_importmap
+
+if [ ! -z "$CI" ]; then
+  bundle config --local path $PROJECT_ROOT/vendor/bundle
+fi
+bundle install
+
+cd -
+cd test/dummy/rails7_webpack
+
+if [ ! -z "$CI" ]; then
+  bundle config --local path $PROJECT_ROOT/vendor/bundle
+fi
+bundle install
+
+cd -
+cd test/dummy/rails6_webpacker
 
 if [ ! -z "$CI" ]; then
   bundle config --local path $PROJECT_ROOT/vendor/bundle

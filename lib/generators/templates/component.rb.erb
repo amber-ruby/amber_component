@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 class <%= class_name %> < ::ApplicationComponent
-  # Your code goes here
+  # Props that your component accepts
+  prop :description, default: -> { 'Default Description' }
 
   after_initialize do
+    # some initialization
     @time = ::Time.now
   end
 end
