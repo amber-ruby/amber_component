@@ -42,9 +42,7 @@ module ::AmberComponent
     extend Helpers::ClassHelper
 
     include Helpers::CssHelper
-    include Views::InstanceMethods
     extend  Views::ClassMethods
-    include Assets::InstanceMethods
     extend  Assets::ClassMethods
     include Rendering::InstanceMethods
     extend  Rendering::ClassMethods
@@ -57,10 +55,30 @@ module ::AmberComponent
       memoize :asset_dir_path
 
       # Memoize these methods in production
-      if ::ENV['RAILS_ENV'] == 'production'
+      if defined?(::Rails.env) && ::Rails.env.production?
         memoize :view_path
         memoize :view_file_name
         memoize :view_type
+      end
+
+      # @return [Class]
+      def compiled_method_container
+        self
+      end
+
+      # @return [String]
+      def type
+        'text/html'
+      end
+
+      # @return [Symbol]
+      def format
+        :html
+      end
+
+      # @return [String]
+      def identifier
+        source_location.first
       end
 
       private
@@ -69,6 +87,8 @@ module ::AmberComponent
       # @return [void]
       def inherited(subclass)
         super
+        return unless subclass.name
+
         method_body = lambda do |**kwargs, &block|
           subclass.render(**kwargs, &block)
         end
@@ -128,6 +148,11 @@ module ::AmberComponent
 
         bind_instance_variables(kwargs)
       end
+    end
+
+    # @return [Class]
+    def compiled_method_container
+      self.class
     end
 
     private

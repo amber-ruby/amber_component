@@ -10,7 +10,7 @@ gem 'rake', '~> 13.0'
 # Development dependencies
 gem 'byebug'
 gem 'git'
-gem 'haml'
+gem 'haml-rails'
 gem 'rubocop', '~> 1.21'
 gem 'sassc'
 gem 'solargraph'
