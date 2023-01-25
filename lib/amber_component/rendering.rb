@@ -19,15 +19,20 @@ module ::AmberComponent
 
       # @return [Boolean]
       def compiled?
-        return false if defined?(::Rails.env) && ::Rails.env.development?
-
         method_defined?(RENDER_TEMPLATE_METHOD_NAME)
+      end
+
+      # @return [Boolean]
+      def compile?
+        return true if defined?(::Rails.env) && ::Rails.env.development?
+
+        !compiled?
       end
 
       # @param force [Boolean] force recompilation
       # @return [void]
       def compile(force: false)
-        return if compiled? && !force
+        return if !compile? && !force
         return if template_handler.nil?
 
         render_template_method_redefinition_lock.synchronize do
