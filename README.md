@@ -337,7 +337,10 @@ custom HTML to a component.
 
 This works similarly to React's `props.children`.
 
-To render the passed nested content call `yield.html_safe` somewhere inside the template/view.
+To render the passed nested content call `children(&block)` somewhere inside the ERB template/view.
+If you're using another template language like Haml,
+you may need to use `children{yield}` instead. This difference
+is due to how these templates are compiled.
 
 ```ruby
 # app/components/modal_component.rb
@@ -358,7 +361,7 @@ end
 
     <div class="modal_body">
         <!-- nested content will be rendered here -->
-        <%= yield.html_safe %>
+        <%= children(&block) %>
     </div>
 
     <div class="modal_footer">
@@ -389,7 +392,7 @@ Note that this will raise an error when no block/nested content is provided.
 
 In order to render nested content
 only when it is present (will work without nested content)
-you can use `yield.html_safe if block_given?`
+you can use `children(&block) if block_given?` in ERB templates (or `children{yield} if block_given?` for Haml and others)
 
 In general `block_given?` will return `true` when a block/nested content is present, otherwise `false`.
 You can use it to render content conditionally based on

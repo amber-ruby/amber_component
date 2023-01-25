@@ -9,42 +9,36 @@ module ::AmberComponent
       module ::Some
         module Namespaced
           class AwesomeComponent < ::AmberComponent::Base
-            view do
-              <<~HTML
-                <h2><%= self.class %> <%= @name %></h2>
-                <div class="namespaced">
-                  <%= yield.html_safe if block_given? %>
-                </div>
-              HTML
-            end
+            view <<~HTML
+              <h2><%= self.class %> <%= @name %></h2>
+              <div class="namespaced">
+                <%= children(&block) if block_given? %>
+              </div>
+            HTML
           end
         end
       end
 
       class ::InnerComponent < ::AmberComponent::Base
-        view do
-          <<~HTML
-            <div class="inner">
-              <h1>I'm the inner component!</h1>
-              <div class="content">
-                <%= @content %>
-              </div>
-              <%= Some::Namespaced.awesome_component name: "snake_cased" do %>
-                <b>nested inside Namespaced component with snake_cased method</b>
-              <% end %>
+        view <<~HTML
+          <div class="inner">
+            <h1>I'm the inner component!</h1>
+            <div class="content">
+              <%= @content %>
             </div>
-          HTML
-        end
+            <%= Some::Namespaced.awesome_component name: "snake_cased" do %>
+              <b>nested inside Namespaced component with snake_cased method</b>
+            <% end %>
+          </div>
+        HTML
       end
 
       class ::OuterComponent < ::AmberComponent::Base
-        view do
-          <<~HTML
-            <div class="outer">
-              <%= inner_component content: 'snake_cased!' %>
-            </div>
-          HTML
-        end
+        view <<~HTML
+          <div class="outer">
+            <%= inner_component content: 'snake_cased!' %>
+          </div>
+        HTML
       end
 
       context 'helper methods' do
@@ -57,9 +51,7 @@ module ::AmberComponent
               <div class="content">
                 snake_cased!
               </div>
-              
-                <b>nested inside Namespaced component with snake_cased method</b>
-            <h2>Some::Namespaced::AwesomeComponent snake_cased</h2>
+              <h2>Some::Namespaced::AwesomeComponent snake_cased</h2>
             <div class="namespaced">
               
                 <b>nested inside Namespaced component with snake_cased method</b>
@@ -141,14 +133,6 @@ module ::AmberComponent
           HTML
         end
 
-        should 'raise error when no view given' do
-          error = assert_raises ::AmberComponent::ViewFileNotFoundError  do
-            NoViewComponent.call
-          end
-
-          assert_equal error.message, "View for `NoViewComponent` could not be found!"
-        end
-
         should 'raise error when multiple views given' do
           error = assert_raises ::AmberComponent::MultipleViewsError do
             MultipleViewsComponent.call
@@ -166,9 +150,7 @@ module ::AmberComponent
 
         should 'render view with method only' do
           class OnlyMethodViewComponent < ::AmberComponent::Base
-            view do
-              "It Works! Hello <%= @name %>!"
-            end
+            view "It Works! Hello <%= @name %>!"
           end
 
           view = OnlyMethodViewComponent.call name: 'John Doe'
@@ -178,15 +160,13 @@ module ::AmberComponent
 
         should 'render correct view type from class method' do
           class OnlyMethodHamlViewComponent < ::AmberComponent::Base
-            view :haml do
-              <<~HAML
-                %h1 It Works!
-                .card
-                  .card-title= @name
-                  .card-content
-                    ="Hello, " + @name + "!"
-              HAML
-            end
+            view <<~HAML, type: :haml
+              %h1 It Works!
+              .card
+                .card-title= @name
+                .card-content
+                  ="Hello, " + @name + "!"
+            HAML
           end
 
           view = OnlyMethodHamlViewComponent.call name: 'John Doe'
@@ -201,56 +181,34 @@ module ::AmberComponent
           HTML
         end
 
-        should 'raise EmptyViewError error whem empty view given' do
-          class EmptyMethodViewComponent < ::AmberComponent::Base
-            view do
-              nil
-            end
-          end
-
-          error = assert_raises ::AmberComponent::EmptyViewError do
-            EmptyMethodViewComponent.call
-          end
-
-          assert_equal error.message, <<~TEXT.squish
-            Custom view for `#{EmptyMethodViewComponent}`
-            from view method cannot be empty!
-          TEXT
-        end
-
         should 'raise UnknownViewTypeError error when unsuported type passed' do
           class UnknownTypeMethodViewComponent < ::AmberComponent::Base
-            view :some_future_template_type do
-              "!@#$%^&*()(*&^%$#"
-            end
+            view "!@#$%^&*()(*&^%$#", type: :some_future_template_type
           end
 
           error = assert_raises ::AmberComponent::UnknownViewTypeError do
             UnknownTypeMethodViewComponent.call
           end
 
-          assert_equal error.message, <<~TEXT.squish
-            Unknown view type for `#{UnknownTypeMethodViewComponent}` from view method!
-            Check return value of param type in `view :[type] do`
+          assert_equal <<~TEXT.squish, error.message
+            Unknown view type for `#{UnknownTypeMethodViewComponent}`!
+            Check return value of param type in `view type: :[type]`
+            or the view file extension.
           TEXT
         end
 
         should 'be able to render block when passed from class method' do
           class BlockInViewMethodComponent < ::AmberComponent::Base
-            view :haml do
-              <<~HAML
-                .card
-                  .card-title= @title
-                  .card-content
-                    = yield if block_given?
-              HAML
-            end
+            view <<~HAML, type: :haml
+              .card
+                .card-title= @title
+                .card-content
+                  = children { yield } if block_given?
+            HAML
           end
 
           class NestedComponent < ::AmberComponent::Base
-            view :erb do
-              "I'm your message passed by block!"
-            end
+            view "I'm your message passed by block!", type: :erb
           end
 
           view = BlockInViewMethodComponent.call title: 'Hello World!' do
@@ -266,93 +224,47 @@ module ::AmberComponent
             </div>
           HTML
         end
+
+        should 'be able to render nested components' do
+          class BlockInViewMethodComponent < ::AmberComponent::Base
+            view <<~HAML, type: :haml
+              .card
+                .card-title= @title
+                .card-content
+                  = children { yield } if block_given?
+            HAML
+          end
+
+          class NestedHamlComponent < ::AmberComponent::Base
+            view "I'm your message passed by block!", type: :erb
+          end
+
+          class OuterHamlComponent < ::AmberComponent::Base
+            view <<~HAML, type: :haml
+              .outer-component
+                = #{BlockInViewMethodComponent}.call title: 'Hello World!' do
+                  %h1 Some Text
+                  = #{NestedHamlComponent}.call
+            HAML
+          end
+
+          view = OuterHamlComponent.call
+
+          assert_equal <<~HTML, view
+            <div class='outer-component'>
+            <div class='card'>
+            <div class='card-title'>Hello World!</div>
+            <div class='card-content'>
+            <h1>Some Text</h1>
+            I'm your message passed by block!
+
+            </div>
+            </div>
+            </div>
+          HTML
+        end
       end
 
-      context 'view from params' do
-        should 'prefer params over class method and file' do
-          view = ::MethodAndFileViewComponent.call(
-            name: 'John Doe',
-            view: "Hello from params <%= @name %>!"
-          )
-          assert_equal view, "Hello from params John Doe!"
-          assert view != "This shouldn't be rendered."
-          assert view != "Hello John Doe!"
-        end
-
-        should 'render view with params only' do
-          class OnlyParamsViewComponent < ::AmberComponent::Base; end
-
-          view = OnlyParamsViewComponent.call(
-            name: 'John Doe',
-            view: "It works from params! Hello <%= @name %>!"
-          )
-          assert !view.nil?
-          assert_equal view, "It works from params! Hello John Doe!"
-        end
-
-        should 'render correct view type from class method' do
-          class OnlyParamsViewComponent < ::AmberComponent::Base; end
-
-          view = OnlyParamsViewComponent.call(
-            name: 'John Doe',
-            view: {
-              type: :haml,
-              content: '="Hello " + @name + " from params!"'
-            }
-          )
-          assert_equal view, "Hello John Doe from params!\n"
-        end
-
-        should 'raise EmptyViewError error whem empty view given' do
-          class EmptyParamViewComponent < ::AmberComponent::Base; end
-
-          error = assert_raises ::AmberComponent::EmptyViewError do
-            EmptyParamViewComponent.call(view: {})
-          end
-
-          assert_equal error.message, <<~TEXT.squish
-            Custom view for `#{EmptyParamViewComponent}`
-            from view method cannot be empty!
-          TEXT
-        end
-
-        should 'raise UnknownViewTypeError error when unsuported type passed' do
-          class UnknownTypeParamViewComponent < ::AmberComponent::Base; end
-
-          error = assert_raises ::AmberComponent::UnknownViewTypeError do
-            UnknownTypeParamViewComponent.call(
-              view: {
-                type: :some_future_template_type,
-                content: "!@#$%^&*()(*&^%$#"
-              }
-            )
-          end
-
-          assert_equal error.message, <<~TEXT.squish
-            Unknown view type for `#{UnknownTypeParamViewComponent}` from view method!
-            Check return value of param type in `view :[type] do`
-          TEXT
-        end
-
-        should 'be able to render block when passed from param' do
-          class BlockInViewParamComponent < ::AmberComponent::Base; end
-
-          class NestedComponent < ::AmberComponent::Base
-            view :erb do
-              "I'm your message passed by block!"
-            end
-          end
-
-          view = BlockInViewParamComponent.call(
-            title: 'Hello World',
-            view: "<%= @title %>! <%= yield if block_given? %>"
-          ) do
-            NestedComponent.call
-          end
-
-          assert_equal "Hello World! I'm your message passed by block!", view
-        end
-      end
     end
   end
 end
