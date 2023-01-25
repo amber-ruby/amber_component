@@ -23,7 +23,7 @@ require 'minitest/autorun'
 require 'rails/railtie'
 require 'shoulda-context'
 
-require 'haml'
+require 'haml-rails'
 require 'sassc'
 require 'nokogiri'
 require 'git'

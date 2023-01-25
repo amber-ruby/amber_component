@@ -12,7 +12,6 @@ module ::AmberComponent
   class Error < ::StandardError; end
   class MissingPropsError < Error; end
   class IncorrectPropTypeError < Error; end
-  class ViewFileNotFoundError < Error; end
   class InvalidTypeError < Error; end
 
   class EmptyViewError < Error; end
